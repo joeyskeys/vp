@@ -5,7 +5,7 @@ QtViewport::QtViewport(QWidget *parent) :
     QOpenGLWidget(parent),
     m_program(0)
 {
-
+    m_mesh.fillTestData();
 }
 
 QtViewport::~QtViewport()
@@ -35,7 +35,7 @@ void QtViewport::initializeGL()
         "uniform mat4 view;\n"
         "void main()\n"
         "{\n"
-        "   gl_Position = proj * view * vert;\n"
+        "   gl_Position = proj * view * vec4(vert, 1.0);\n"
         "}";
 
     const char *fsrc =
@@ -73,7 +73,7 @@ void QtViewport::paintGL()
     };
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, verts);
+    glVertexAttribPointer(0, m_mesh.getVertCount(), GL_FLOAT, GL_FALSE, 0, m_mesh.getVerts());
     glDrawArrays(GL_TRIANGLES, 0, 3);
     glDisableVertexAttribArray(0);
 }

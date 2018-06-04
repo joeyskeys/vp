@@ -5,6 +5,8 @@
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
 
+#include <model/mesh.h>
+
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
 
@@ -29,4 +31,6 @@ private:
     QMatrix4x4  m_proj_val;
     GLuint      m_view_loc;
     QMatrix4x4  m_view_val;
+
+    Mesh        m_mesh;
 };

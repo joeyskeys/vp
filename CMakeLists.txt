@@ -8,7 +8,7 @@ project(vp)
 
 set(CMAKE_AUTOMOC ON)
 
-set(CMAKE_PREFIX_PATH "D:/ProgramFiles/QT/installDir/5.10.1/msvc2017_64" CACHE PATH "Location of Qt")
+set(CMAKE_PREFIX_PATH "G:/QT/program/5.10.1/msvc2013_64" CACHE PATH "Location of Qt")
 find_package(Qt5Widgets)
 find_package(Qt5Core)
 find_package(Qt5Gui)
