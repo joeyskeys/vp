@@ -63,3 +63,4 @@ void* Manager<T>::getNext()
 }
 
 typedef Manager<MeshBlock> MeshManager;
+typedef Manager<CameraBlock> CameraManager;

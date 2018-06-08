@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mesh.h"
+#include "camera.h"
 
 #include <cstring>
 
@@ -103,3 +104,4 @@ void* Block<T, size>::getNext()
 }
 
 typedef Block<MeshObj, BLOCK_SIZE> MeshBlock;
+typedef Block<CameraObj, BLOCK_SIZE> CameraBlock;
