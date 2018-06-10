@@ -1,16 +1,29 @@
-add_library(model STATIC
+set(HEADERS
 	cache.h
+	block.h
+	manager.h
 	mesh.h
-    mesh.cpp
+	light.h
+	material.h
+	)
+
+set(SOURCES
+	mesh.cpp
+	light.cpp
+	material.cpp
+	)
+
+add_library(model STATIC
+	${HEADERS}
+	${SOURCES}
     )
 
 source_group("Header Files"
 	FILES
-		cache.h
-		mesh.h
+		${HEADERS}
 )
 
 source_group("Source Files"
 	FILES
-		mesh.cpp
+		${SOURCES}
 )

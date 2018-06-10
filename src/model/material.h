@@ -16,8 +16,8 @@ private:
 
 public:
     static ShaderManager* getInstance();
-    bool loadShader(string& name);
-    QOpenGLShaderProgram* getShader(string& name);
+    bool loadShader(const string& name);
+    QOpenGLShaderProgram* getShader(const string& name);
 
 private:
     map<string, QOpenGLShaderProgram> shader_map;
