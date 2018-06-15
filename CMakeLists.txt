@@ -20,7 +20,9 @@ include_directories(${Qt5Widgets_INCLUDE_DIRS}
                     ${Qt5Gui_INCLUDE_DIRS})
 
 find_package(GLM)
-message("${GLM_INCLUDE_DIRS}")
 include_directories(${GLM_INCLUDE_DIRS})
+
+find_package(GLEW)
+include_directories(${GLEW_INCLUDE_DIRS})
 
 add_subdirectory(src)

@@ -1,7 +1,8 @@
 #pragma once
 
+#include <GL/glew.h>
+
 #include <QOpenGLWidget>
-#include <QOpenGLFunctions>
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
 
@@ -10,7 +11,7 @@
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
 
-class QtViewport : public QOpenGLWidget, protected QOpenGLFunctions
+class QtViewport : public QOpenGLWidget
 {
     Q_OBJECT
 

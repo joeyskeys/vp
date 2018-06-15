@@ -21,7 +21,8 @@ QtViewport::~QtViewport()
 
 void QtViewport::initializeGL()
 {
-    initializeOpenGLFunctions();
+	if (glewInit() != GLEW_OK)
+		throw std::exception("Failed to initialize GLEW\n");
     
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);

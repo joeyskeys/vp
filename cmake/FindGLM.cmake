@@ -1,8 +1,8 @@
 if(NOT GLM_ROOT)
     if(WIN32)
-        set(GLM_ROOT "G:/WorkSpace/installed_libs/glm")
+        set(GLM_ROOT "G:/WorkSpace/installed_libs/glm" CACHE PATH "Location of glm")
     else()
-        set(GLM_ROOT "/usr/local")
+        set(GLM_ROOT "/usr/local" CACHE PATH "Location of glm")
     endif()
 endif()
 
