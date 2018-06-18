@@ -23,9 +23,12 @@ public:
 	const float*	getVerts() const;
 	const float*	getNorms() const;
 	const int*		getIdx() const;
-	inline const int 	getVertCount() const {return vert_cnt;}
-	inline const int 	getNormCount() const {return norm_cnt;}
-	inline const int 	getIdxCount() const {return idx_cnt;}
+	inline const int 	getVertCount() const { return vert_cnt; }
+	inline const int 	getNormCount() const { return norm_cnt; }
+	inline const int 	getIdxCount() const { return idx_cnt; }
+	inline const size_t	getVertSize() const { return vert_cnt * sizeof(float) * 3; }
+	inline const size_t getNormSize() const { return norm_cnt * sizeof(float) * 3; }
+	inline const size_t getIdxSize() const	{ return idx_cnt * sizeof(int) * 3; }
 
 private:
 	MeshObj *m;

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <QOpenGLShaderProgram>
+#include "shader.h"
+
+#include <GL/glew.h>
 
 #include <map>
 
@@ -20,5 +22,6 @@ public:
     QOpenGLShaderProgram* getShader(const string& name);
 
 private:
-    map<string, QOpenGLShaderProgram> shader_map;
+    map<string, QOpenGLShaderProgram*> shader_map;
+	vector<string> search_paths;
 };

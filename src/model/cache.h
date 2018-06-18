@@ -3,6 +3,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <utility>
+#include <string>
 
 using namespace std;
 
@@ -98,3 +99,56 @@ void Cache<T>::fillData(unsigned int c, T *d)
 
 typedef Cache<int> Cachei;
 typedef Cache<float> Cachef;
+typedef Cache<char>	Cachec;
+
+class Str : public Cachec
+{
+public:
+	Str(): Cachec() {}
+
+	Str(const string& ccpstr)
+	{
+		size = cppstr.size();
+		data = (char*)malloc(size);
+		memcpy(data, cppstr.c_str(), size);
+	}
+
+	~Str()
+	{
+		if (data)
+			free(data);
+	}
+
+	Str(const Str& rhs): Cachec(rhs) {}
+
+	Str& operator=(const Str& rhs)
+	{
+		Cachec::operator=(rhs);
+
+		return *this;
+	}
+
+	Str(const Str&& rhs): Cachec(move(rhs)) {}
+
+	Str& operator=(const Str&& rhs)
+	{
+		Cachec::operator=(move(rhs))
+
+		return *this;
+	}
+
+	Str& operator=(const string& cppstr)
+	{
+		if (data && size != cppstr.size())
+			free(data);
+
+		size = cppstr.size();
+		data = (char*)malloc(size);
+		memcpy(data, cppstr.c_str(), size);
+	}
+
+	inline const char* c_str()
+	{
+		return data;
+	}
+};

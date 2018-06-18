@@ -14,6 +14,8 @@ struct MeshObj;
 typedef struct MeshObj MeshObj;
 struct LightObj;
 typedef struct LightObj LightObj;
+struct ShaderProgramObj;
+typedef struct ShaderProgramObj ShaderProgramObj;
 
 template <typename T, int size>
 class Block 
@@ -109,3 +111,4 @@ void* Block<T, size>::getNext()
 
 typedef Block<MeshObj, LARGE_BLOCK_SIZE> MeshBlock;
 typedef Block<LightObj, BLOCK_SIZE> LightBlock;
+typedef Block<ShaderProgramObj, BLOCK_SIZE> ShaderProgramBlock;
