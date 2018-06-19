@@ -17,7 +17,7 @@ private:
     Manager& operator=(const Manager<T>& b);
 
 public:
-    static Manager<T>& getInstance();
+    static Manager<T>* getInstance();
     void*  getNext();
 
 private:
@@ -40,10 +40,10 @@ Manager<T>::~Manager()
 }
 
 template <typename T>
-Manager<T>& Manager<T>::getInstance()
+Manager<T>* Manager<T>::getInstance()
 {
     static Manager<T> instance;
-    return instance;
+    return &instance;
 }
 
 template <typename T>
@@ -63,4 +63,3 @@ void* Manager<T>::getNext()
 }
 
 typedef Manager<MeshBlock> MeshManager;
-typedef Manager<CameraBlock> CameraManager;

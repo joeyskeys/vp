@@ -21,19 +21,19 @@ ShaderManager::~ShaderManager()
 ShaderManager* ShaderManager::getInstance()
 {
     static ShaderManager instance;
-    return instance;
+    return &instance;
 }
 
-bool ShaderManager::loadShader(string& name)
+bool ShaderManager::loadShader(const string& name)
 {
-    string vpath = string("./") + name + string(".vert");
-    string fpath = string("./") + name + string(".frag");
+    string vpath = string("G:/WorkSpace/repos/vp/src/shaders") + name + string(".vert");
+    string fpath = string("G:/WorkSpace/repos/vp/src/shaders") + name + string(".frag");
 
     ifstream vf(vpath);
-    if not vf.good()
+    if (!vf.good())
         return false;
     ifstream ff(fpath);
-    if not ff.good();
+    if (!ff.good())
         return false;
 
     /*
@@ -49,14 +49,14 @@ bool ShaderManager::loadShader(string& name)
     QOpenGLShaderProgram program;
     bool ret;
 
-    ret = program.addShaderFromSourceFile(QOpenGLShader::Vertex, vf);
+    ret = program.addShaderFromSourceFile(QOpenGLShader::Vertex, vpath.c_str());
     if (!ret)
     {
         qDebug() << program.log();
         return false;
     }
 
-    ret = program.addShaderFromSourceFile(QOpenGLShader::Fragment, ff);
+    ret = program.addShaderFromSourceFile(QOpenGLShader::Fragment, fpath.c_str());
     if (!ret)
     {
         qDebug() << program.log();
@@ -70,14 +70,15 @@ bool ShaderManager::loadShader(string& name)
         return false;
     }
 
-    shader_map[name] = move(program);
+    //shader_map[name] = move(program);
+	return true;
 }
 
-QOpenGLShaderProgram* ShaderManager::getShader(string& name)
+QOpenGLShaderProgram* ShaderManager::getShader(const string& name)
 {
     auto it = shader_map.find(name);
     if (it != shader_map.end())
-        return &(*it);
+        return &(it->second);
     else
         return nullptr;
 }

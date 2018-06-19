@@ -1,13 +1,23 @@
 #pragma once
 
-#include "mesh.h"
-#include "camera.h"
+//#include "mesh.h"
+//#include "light.h"
 
 #include <cstring>
 
 using namespace std;
 
-const BLOCK_SIZE = 2048;
+const int BLOCK_SIZE = 64;
+const int LARGE_BLOCK_SIZE = 1024;
+
+struct MeshObj;
+typedef struct MeshObj MeshObj;
+struct LightObj;
+typedef struct LightObj LightObj;
+struct CameraObj;
+typedef struct CameraObj CameraObj;
+struct ShaderProgramObj;
+typedef struct ShaderProgramObj ShaderProgramObj;
 
 template <typename T, int size>
 class Block 
@@ -17,8 +27,8 @@ public:
     ~Block();
     Block(const Block<T, size>& b);
     Block& operator=(const Block<T, size>& b);
-    Block(const Block<T, size>&& b);
-    Block<T, s>& operator=(Block<T, size>&& b);
+    Block(Block<T, size>&& b);
+    Block<T, size>& operator=(Block<T, size>&& b);
 
     void*  getCurrent();
     void*  getNext();
@@ -44,7 +54,7 @@ Block<T, size>::~Block()
 
 template <typename T, int size>
 Block<T, size>::Block(const Block& b):
-    current(b.current),
+    current(b.current)
 {
     memcpy(buffer, b.buffer, sizeof(T) * size);
 }
@@ -59,17 +69,15 @@ Block<T, size>& Block<T, size>::operator=(const Block<T, size>& b)
 }
 
 template <typename T, int size>
-Block(const Block<T, size>&& b):
-    current(b.current);
+Block<T,size>::Block(Block<T, size>&& b)
 {
-    if (buffer)
-        free(buffer);
+	current = b.current;
     buffer = b.buffer;
     b.buffer = nullptr;
 }
 
 template <typename T, int size>
-Block<T, s>& Block<T, size>::operator=(const Block<T, size>&& b)
+Block<T, size>& Block<T, size>::operator=(Block<T, size>&& b)
 {
     current = b.current;
     if (buffer)
@@ -103,5 +111,7 @@ void* Block<T, size>::getNext()
     }
 }
 
-typedef Block<MeshObj, BLOCK_SIZE> MeshBlock;
+typedef Block<MeshObj, LARGE_BLOCK_SIZE> MeshBlock;
+typedef Block<LightObj, BLOCK_SIZE> LightBlock;
 typedef Block<CameraObj, BLOCK_SIZE> CameraBlock;
+typedef Block<ShaderProgramObj, BLOCK_SIZE> ShaderProgramBlock;

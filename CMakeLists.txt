@@ -8,13 +8,21 @@ project(vp)
 
 set(CMAKE_AUTOMOC ON)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
 set(CMAKE_PREFIX_PATH "G:/QT/program/5.10.1/msvc2013_64" CACHE PATH "Location of Qt")
 find_package(Qt5Widgets)
 find_package(Qt5Core)
 find_package(Qt5Gui)
 
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
-include_directories(${Qt5Core_INCLUDE_DIRS})
-include_directories(${Qt5Gui_INCLUDE_DIRS})
+include_directories(${Qt5Widgets_INCLUDE_DIRS}
+                    ${Qt5Core_INCLUDE_DIRS}
+                    ${Qt5Gui_INCLUDE_DIRS})
+
+find_package(GLM)
+include_directories(${GLM_INCLUDE_DIRS})
+
+find_package(GLEW)
+include_directories(${GLEW_INCLUDE_DIRS})
 
 add_subdirectory(src)
