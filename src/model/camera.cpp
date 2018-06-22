@@ -15,7 +15,7 @@ Camera::~Camera()
 
 Camera::Camera(const Camera& rhs):
     proj(rhs.proj),
-    proj(rhs.proj)
+    view(rhs.view)
 {
     c->eye = rhs.c->eye;
     c->lookat = rhs.c->lookat;
@@ -27,7 +27,7 @@ Camera::Camera(const Camera& rhs):
     c->ratio = rhs.c->ratio;
 }
 
-Camera& operator=(const Camera& rhs)
+Camera& Camera::operator=(const Camera& rhs)
 {
     c->eye = rhs.c->eye;
     c->lookat = rhs.c->lookat;
@@ -41,27 +41,36 @@ Camera& operator=(const Camera& rhs)
     return *this;
 }
 
-const mat4& getProjMatrix()
+const glm::mat4& Camera::getProjMatrix()
 {
     return proj;
 }
 
-const mat4& getViewMatrix()
+const glm::mat4& Camera::getViewMatrix()
 {
     return view;
 }
 
-void translate(const vec3& p)
+void Camera::translate(const glm::vec3& p)
 {
-
+	view = glm::translate(view, p);
+	c->eye += p;
 }
 
-void rotate(const float x, const float y)
+void Camera::rotate(const float x, const float y)
 {
-
+	glm::vec3 dir = c->lookat - c->eye;
+	glm::vec3 right = glm::normalize(glm::cross(dir, glm::vec3(0.f, 1.f, 0.f)));
+	glm::vec3 up = glm::normalize(glm::cross(right, dir));
+	glm::mat4 xform = glm::rotate(glm::mat4(1.f), x, up);
+	up = glm::normalize(glm::cross(dir, up));
+	xform = glm::rotate(xform, y, up);
+	view = xform * view;
+	dir = glm::vec3(xform * glm::vec4(dir, 0.f));
+	c->lookat = c->eye + dir;
 }
 
-void tilt(const float angle)
+void Camera::tilt(const float angle)
 {
 
 }
