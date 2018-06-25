@@ -14,7 +14,7 @@ public:
 	~Cache();
 	Cache(const Cache<T>& b);
 	Cache& operator=(const Cache<T>& b);
-	Cache(const Cache<T>&& b);
+	Cache(Cache<T>&& b);
 	Cache& operator=(Cache<T>&& b);
 
 	void fillData(unsigned int c, T *d);
@@ -66,7 +66,7 @@ Cache<T>& Cache<T>::operator=(const Cache<T>& b)
 }
 
 template <typename T>
-Cache<T>::Cache(const Cache<T>&& b):
+Cache<T>::Cache(Cache<T>&& b):
 	size(b.size),
 	offset(b.offset)
 {
@@ -106,7 +106,7 @@ class Str : public Cachec
 public:
 	Str(): Cachec() {}
 
-	Str(const string& ccpstr)
+	Str(const string& cppstr)
 	{
 		size = cppstr.size();
 		data = (char*)malloc(size);
@@ -132,7 +132,7 @@ public:
 
 	Str& operator=(const Str&& rhs)
 	{
-		Cachec::operator=(move(rhs))
+		Cachec::operator=(move(rhs));
 
 		return *this;
 	}

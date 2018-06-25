@@ -5,6 +5,10 @@
 #include <QOpenGLWidget>
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
+#include <glm/glm.hpp>
+#include <glm/mat4x4.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <model/mesh.h>
 #include <model/light.h>
@@ -27,15 +31,15 @@ protected:
     void resizeGL(int width, int height) override;
 
 private:
-    QOpenGLShaderProgram *m_program;
+	GLuint		m_prog;
 
 	GLuint		m_vbo1, m_vbo2;
 	GLuint		m_vao;
 
     GLuint      m_proj_loc;
-    QMatrix4x4  m_proj_val;
+	glm::mat4	m_proj_val;
     GLuint      m_view_loc;
-    QMatrix4x4  m_view_val;
+	glm::mat4	m_view_val;
     GLuint      m_light_position_loc;
     GLuint      m_light_color_loc;
 

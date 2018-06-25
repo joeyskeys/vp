@@ -13,7 +13,7 @@ typedef struct ShaderProgramObj
     Str name;
 } ShaderProgramObj;
 
-class ShadeProgram
+class ShaderProgram
 {
 public:
     ShaderProgram();

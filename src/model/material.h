@@ -4,6 +4,7 @@
 
 #include <GL/glew.h>
 
+#include <QOpenGLShaderProgram>
 #include <map>
 
 using namespace std;

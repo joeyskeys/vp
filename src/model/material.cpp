@@ -78,7 +78,7 @@ QOpenGLShaderProgram* ShaderManager::getShader(const string& name)
 {
     auto it = shader_map.find(name);
     if (it != shader_map.end())
-        return &(it->second);
+        return it->second;
     else
         return nullptr;
 }

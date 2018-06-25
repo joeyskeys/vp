@@ -1,22 +1,21 @@
 #include "viewport.h"
 #include <QOpenGLShaderProgram>
 
+#include <cstring>
+
 QtViewport::QtViewport(QWidget *parent) :
     QOpenGLWidget(parent),
-    m_program(0)
+    m_prog(0)
 {
     m_mesh.fillTestData();
 	m_light.setType(LIGHT_PNT);
-	m_light.setPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+	m_light.setPosition(glm::vec3(0.0f, 0.0f, -0.8f));
 	m_light.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 }
 
 QtViewport::~QtViewport()
 {
     makeCurrent();
-
-    if (m_program)
-        delete m_program;
 
 	clearGL();
 
@@ -69,15 +68,25 @@ void QtViewport::initializeGL()
         "   outc = vec4(1., 0., 0., 1.) * brightness;\n"
         "}";
 
-    m_program = new QOpenGLShaderProgram;
-    m_program->addShaderFromSourceCode(QOpenGLShader::Vertex, vsrc);
-    m_program->addShaderFromSourceCode(QOpenGLShader::Fragment, fsrc);
-    m_program->link();
+	m_prog = glCreateProgram();
+	GLuint vshader, fshader;
+	
+	vshader = glCreateShader(GL_VERTEX_SHADER);
+	fshader = glCreateShader(GL_FRAGMENT_SHADER);
+	int len = strlen(vsrc);
+	glShaderSource(vshader, 1, &vsrc, &len);
+	glCompileShader(vshader);
+	len = strlen(fsrc);
+	glShaderSource(fshader, 1, &fsrc, &len);
+	glCompileShader(fshader);
+	glAttachShader(m_prog, vshader);
+	glAttachShader(m_prog, fshader);
+	glLinkProgram(m_prog);
 
-    m_proj_loc = m_program->uniformLocation("proj");
-    m_view_loc = m_program->uniformLocation("view");
-	m_light_position_loc = m_program->uniformLocation("light.position");
-	m_light_color_loc = m_program->uniformLocation("light.color");
+	m_proj_loc = glGetUniformLocation(m_prog, "proj");
+	m_view_loc = glGetUniformLocation(m_prog, "view");
+	m_light_position_loc = glGetUniformLocation(m_prog, "light.position");
+	m_light_color_loc = glGetUniformLocation(m_prog, "light.color");
 
 	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
@@ -95,34 +104,28 @@ void QtViewport::clearGL()
 	glDeleteBuffers(1, &m_vbo1);
 	glDeleteBuffers(1, &m_vbo2);
 	glDeleteBuffers(1, &m_vao);
+	if (m_prog)
+		glDeleteProgram(m_prog);
 }
 
 void QtViewport::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	m_program->bind();
-    m_proj_val.setToIdentity();
-    m_proj_val.perspective(60.f, 1.2f, 1.f, 100.f);
-    m_program->setUniformValue("proj", m_proj_val);
-    m_view_val.setToIdentity();
-    m_program->setUniformValue("view", m_view_val);
-	glUniform3fv(m_light_position_loc, 1, (GLfloat*)m_light.getData());
+	glUseProgram(m_prog);
 
-    static GLfloat verts[] = {
-        -0.5f, -0.5f, 0.f,
-        0.5f, -0.5f, 0.f,
-        0.f, 0.5f, 0.f
-    };
+	m_proj_val = glm::perspective(1.047f, 4.f / 3.f, 1.f, 100.f);
+	glUniformMatrix4fv(m_proj_loc, 1, GL_FALSE, glm::value_ptr(m_proj_val));
+	m_view_val = glm::mat4(1.f);
+	glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, glm::value_ptr(m_view_val));
+	glUniform3fv(m_light_position_loc, 1, (GLfloat*)m_light.getData());
 
     glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo1);
     glVertexAttribPointer(0, m_mesh.getVertCount(), GL_FLOAT, GL_FALSE, 0, (void*)0);
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, m_mesh.getVerts());
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo2);
 	glVertexAttribPointer(1, m_mesh.getNormCount(), GL_FLOAT, GL_FALSE, 0, (void*)0);
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, m_mesh.getNorms());
     glDrawArrays(GL_TRIANGLES, 0, 3);
 	glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(0);

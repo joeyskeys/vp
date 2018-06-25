@@ -10,7 +10,7 @@ Camera::Camera():
 
 Camera::~Camera()
 {
-    c->~CameraObj;
+    c->~CameraObj();
 }
 
 Camera::Camera(const Camera& rhs):
