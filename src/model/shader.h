@@ -17,10 +17,14 @@ class ShaderProgram
 {
 public:
     ShaderProgram();
-    ~ShaderProgram();
+	~ShaderProgram();
+    ShaderProgram(const ShaderProgram& rhs) = delete;
+    ShaderProgram& operator=(const ShaderProgram& rhs) = delete;
+	ShaderProgram(ShaderProgram&& rhs);
+	ShaderProgram& operator=(ShaderProgram&& rhs);
 
     inline bool isInitailized() const { return !program; }
-    bool    load(const string& p, const string& n);
+    bool		load(const string& p, const string& n);
     inline void use() const { glUseProgram(program); }
 
     inline GLuint   getProgram() const { return program; }
@@ -32,9 +36,6 @@ public:
 private:
     ShaderProgramObj *s;
     GLuint  program;
-
-    ShaderProgram(const ShaderProgram& rhs);
-    ShaderProgram& operator=(const ShaderProgram& rhs);
-
+    
     static ShaderProgramManager *mgr;
 };

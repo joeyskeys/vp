@@ -2,13 +2,13 @@
 
 #include <iostream>
 #include <fstream>
+#include <cstdio>
 #include <vector>
 
 ShaderProgramManager* ShaderProgram::mgr = ShaderProgramManager::getInstance();
 
 ShaderProgram::ShaderProgram():
-    program(0),
-    initailized(false)
+    program(0)
 {
     void *t = mgr->getNext();
     s = new (t) ShaderProgramObj;
@@ -21,15 +21,35 @@ ShaderProgram::~ShaderProgram()
     s->~ShaderProgramObj();
 }
 
-static size_t getFileSize(const ifstream& f)
+ShaderProgram::ShaderProgram(ShaderProgram&& rhs)
 {
-    f.seekg(0, ios::beg);
-    size_t pos = f.tellg();
-    f.seekg(0, ios::end);
-    return f.tellg() - pos;
+	s = rhs.s;
+	rhs.s = nullptr;
+	program = rhs.program;
+	rhs.program = 0;
 }
 
-static GLuint loadShader(GLenum type, char *buf, size_t size)
+ShaderProgram& ShaderProgram::operator=(ShaderProgram&& rhs)
+{
+	s = rhs.s;
+	rhs.s = nullptr;
+	program = rhs.program;
+	rhs.program = 0;
+
+	return *this;
+}
+
+static size_t getFileSize(ifstream& f)
+{
+    f.seekg(0, ios::beg);
+    streampos pos = f.tellg();
+    f.seekg(0, ios::end);
+	size_t size = f.tellg() - pos;
+	f.seekg(0, ios::beg);
+    return size;
+}
+
+static GLuint loadShader(GLenum type, char *buf, GLint size)
 {
     GLint succ, logsize;
     char* log;
@@ -41,10 +61,11 @@ static GLuint loadShader(GLenum type, char *buf, size_t size)
     if (succ == GL_FALSE)
     {
         glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logsize);
-        buf = (char*)malloc(logsize);
+        log = (char*)malloc(logsize);
         glGetShaderInfoLog(shader, logsize, &logsize, log);
-        cerr << log;
-        free(buf);
+        //cerr << log << endl;
+		cout << log << endl;
+        free(log);
         glDeleteShader(shader);
         return 0;
     }
@@ -55,12 +76,12 @@ static GLuint loadShader(GLenum type, char *buf, size_t size)
 bool ShaderProgram::load(const string& p, const string& n)
 {
     string vpath = p + n + ".vert";
-    ifstream vf(vpath);
+    ifstream vf(vpath, ios::in | ios::binary);
     if (!vf.good())
         return false;
 
     string fpath = p + n + ".frag";
-    ifstream ff(fpath);
+    ifstream ff(fpath, ios::in | ios::binary);
     if (!ff.good())
         return false;
 
@@ -68,19 +89,27 @@ bool ShaderProgram::load(const string& p, const string& n)
     size_t  size;
 
     size = getFileSize(vf);
-    buf = (char*)malloc(size);
+    buf = (char*)malloc(size + 1);
     vf.read(buf, size);
-    GLuint vs = loadShader(GL_VERTEX_SHADER, buf, size);
+	buf[size] = 0;
+	//FILE *vff = fopen(vpath.c_str(), "r");
+	//fread(buf, 1, size, vff);
+	//fclose(vff);
+	vf.close();
+    GLuint vs = loadShader(GL_VERTEX_SHADER, buf, size + 1);
+    free(buf);
     if (!vs)
         return false;
-    free(buf);
 
     size = getFileSize(ff);
-    buf = (char*)malloc(size);
-    GLuint fs = loadShader(GL_FRAGMENT_SHADER, buf, size);
+    buf = (char*)malloc(size + 1);
+	ff.read(buf, size);
+	buf[size] = 0;
+	ff.close();
+    GLuint fs = loadShader(GL_FRAGMENT_SHADER, buf, size + 1);
+	free(buf);
     if (!fs)
         return false;
-    free(buf);
 
     program = glCreateProgram();
     glAttachShader(program, vs);
@@ -93,7 +122,8 @@ bool ShaderProgram::load(const string& p, const string& n)
         GLint logsize;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logsize);
         buf = (char*)malloc(logsize);
-        cerr << buf << endl;
+        //cerr << buf << endl;
+		cout << buf << endl;
         free(buf);
         glDeleteProgram(program);
         glDeleteShader(vs);

@@ -5,6 +5,7 @@ set(HEADERS
 	mesh.h
 	light.h
 	camera.h
+	shader.h
 	material.h
 	)
 
@@ -12,6 +13,7 @@ set(SOURCES
 	mesh.cpp
 	light.cpp
 	camera.cpp
+	shader.cpp
 	material.cpp
 	)
 

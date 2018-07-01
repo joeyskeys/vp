@@ -1,5 +1,6 @@
 #include "manager.h"
 
+#include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -13,8 +14,8 @@ typedef struct CameraObj
     float angle;
 
     char type;
-    float near;
-    float far;
+	float near_plane;
+	float far_plane;
     union {
         float fov;
         float width;
@@ -37,7 +38,9 @@ public:
     Camera& operator=(const Camera& rhs);
 
     const glm::mat4& getProjMatrix();
+	const float*	 getProjMatrixPtr();
     const glm::mat4& getViewMatrix();
+	const float*	 getViewMatrixPtr();
 
     void translate(const glm::vec3& p);
     void rotate(const float x, const float y);

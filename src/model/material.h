@@ -12,17 +12,19 @@ using namespace std;
 class ShaderManager
 {
 private:
-    ShaderManager();
-    ~ShaderManager();
-    ShaderManager(const ShaderManager& rhs);
-    ShaderManager& operator=(const ShaderManager& rhs);
+	ShaderManager();
 
 public:
+    ShaderManager(const ShaderManager& rhs) = delete;
+    ShaderManager& operator=(const ShaderManager& rhs) = delete;
+
+public:
+    ~ShaderManager();
     static ShaderManager* getInstance();
     bool loadShader(const string& name);
-    QOpenGLShaderProgram* getShader(const string& name);
+    ShaderProgram* getShader(const string& name);
 
 private:
-    map<string, QOpenGLShaderProgram*> shader_map;
+    map<string,ShaderProgram> shader_map;
 	vector<string> search_paths;
 };

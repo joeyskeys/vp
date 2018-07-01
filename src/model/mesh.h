@@ -18,7 +18,8 @@ public:
 	Mesh(const Mesh& b);
 	Mesh& operator=(const Mesh& b);
 
-	void fillTestData();
+	void fillTriangle();
+	void fillCube();
 
 	const float*	getVerts() const;
 	const float*	getNorms() const;

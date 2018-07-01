@@ -1,11 +1,18 @@
 #include "camera.h"
 
+#include <glm/gtc/type_ptr.hpp>
+
+CameraManager* Camera::mgr = CameraManager::getInstance();
+
 Camera::Camera():
     proj(1.0f),
     view(1.0f)
 {
     void *t = mgr->getNext();
     c = new (t) CameraObj;
+
+	c->eye = glm::vec3(0.f, 0.f, 1.f);
+	c->lookat = glm::vec3(0.f, 0.f, 0.f);
 }
 
 Camera::~Camera()
@@ -21,8 +28,8 @@ Camera::Camera(const Camera& rhs):
     c->lookat = rhs.c->lookat;
     c->angle = rhs.c->angle;
     c->type = rhs.c->type;
-    c->near = rhs.c->near;
-    c->far = rhs.c->far;
+    c->near_plane = rhs.c->near_plane;
+    c->far_plane = rhs.c->far_plane;
     c->fov = rhs.c->fov;
     c->ratio = rhs.c->ratio;
 }
@@ -33,8 +40,8 @@ Camera& Camera::operator=(const Camera& rhs)
     c->lookat = rhs.c->lookat;
     c->angle = rhs.c->angle;
     c->type = rhs.c->type;
-    c->near = rhs.c->near;
-    c->far = rhs.c->far;
+    c->near_plane = rhs.c->near_plane;
+    c->far_plane = rhs.c->far_plane;
     c->fov = rhs.c->fov;
     c->ratio = rhs.c->ratio;
 
@@ -46,15 +53,26 @@ const glm::mat4& Camera::getProjMatrix()
     return proj;
 }
 
+const float* Camera::getProjMatrixPtr()
+{
+	return glm::value_ptr(proj);
+}
+
 const glm::mat4& Camera::getViewMatrix()
 {
     return view;
 }
 
+const float* Camera::getViewMatrixPtr()
+{
+	return glm::value_ptr(view);
+}
+
 void Camera::translate(const glm::vec3& p)
 {
-	view = glm::translate(view, p);
+	//view = glm::translate(view, p);
 	c->eye += p;
+	view = glm::lookAt(c->eye, c->lookat, glm::vec3(0.f, 1.f, 0.f));
 }
 
 void Camera::rotate(const float x, const float y)

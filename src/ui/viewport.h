@@ -12,6 +12,8 @@
 
 #include <model/mesh.h>
 #include <model/light.h>
+#include <model/shader.h>
+#include <model/camera.h>
 
 QT_FORWARD_DECLARE_CLASS(QOpenGLShaderProgram)
 QT_FORWARD_DECLARE_CLASS(QOpenGLTexture)
@@ -30,8 +32,12 @@ protected:
     void paintGL() override;
     void resizeGL(int width, int height) override;
 
+	void keyPressEvent(QKeyEvent *event) override;
+
 private:
 	GLuint		m_prog;
+	ShaderProgram *m_program;
+	Camera		*m_camera;
 
 	GLuint		m_vbo1, m_vbo2;
 	GLuint		m_vao;

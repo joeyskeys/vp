@@ -12,11 +12,13 @@ class Manager
 {
 private:
     Manager();
-    ~Manager();
-    Manager(const Manager<T>& b);
-    Manager& operator=(const Manager<T>& b);
 
 public:
+    Manager(const Manager<T>& b) = delete;
+    Manager& operator=(const Manager<T>& b) = delete;
+
+public:
+	~Manager();
     static Manager<T>* getInstance();
     void*  getNext();
 

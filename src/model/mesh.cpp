@@ -37,7 +37,7 @@ Mesh& Mesh::operator=(const Mesh& b)
 	return *this;
 }
 
-void Mesh::fillTestData()
+void Mesh::fillTriangle()
 {
     static float v[9] = {
         -0.5f, -0.5f, -1.0f,
@@ -61,6 +61,24 @@ void Mesh::fillTestData()
     vert_cnt = 3;
     norm_cnt = 3;
     idx_cnt = 1;
+}
+
+void Mesh::fillCube()
+{
+	static float v[24] = {
+		-0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, -0.5f,
+		0.5f, -0.5f, 0.5f,
+		0.5f, -0.5f, 0.5f,
+		-0.5f, 0.5f, -0.5f,
+		0.5f, 0.5f, -0.5f,
+		0.5f, 0.5f, 0.5f,
+		-0.5f, 0.5f, 0.5f
+	};
+
+	//static float n[24] = {
+
+	//}
 }
 
 const float* Mesh::getVerts() const
