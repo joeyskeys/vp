@@ -43,7 +43,10 @@ public:
 	const float*	 getViewMatrixPtr();
 
     void translate(const glm::vec3& p);
+	void translateAroundPivot(const float x, const float y);
     void rotate(const float x, const float y);
+	void rotateAroundPivot(const float x, const float y);
+	void zoom(const float v);
     void tilt(const float angle);
 
 private:

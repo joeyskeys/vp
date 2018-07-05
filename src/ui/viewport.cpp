@@ -2,12 +2,17 @@
 
 #include <QOpenGLShaderProgram>
 #include <QKeyEvent>
+#include <QMouseEvent>
+#include <QCursor>
+#include <QPoint>
 
 #include <cstring>
 
 QtViewport::QtViewport(QWidget *parent) :
-    QOpenGLWidget(parent),
-    m_prog(0)
+	QOpenGLWidget(parent),
+	m_prog(0),
+	m_move_enabled(false),
+	m_rotate_enabled(false)
 {
     m_mesh.fillTriangle();
 	m_light.setType(LIGHT_PNT);
@@ -15,6 +20,8 @@ QtViewport::QtViewport(QWidget *parent) :
 	m_light.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 	m_program = new ShaderProgram;
 	m_camera = new Camera;
+	QPoint p = mapFromGlobal(QCursor::pos());
+	m_mouse_pos = glm::vec2(p.x(), p.y());
 }
 
 QtViewport::~QtViewport()
@@ -39,7 +46,7 @@ void QtViewport::initializeGL()
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	
-	m_program->load("G:/WorkSpace/repos/vp/src/shaders/", "basic");
+	m_program->load("E:/work/repos/vp/src/shaders/", "basic");
 	m_prog = m_program->getProgram();
 
 	m_proj_loc = glGetUniformLocation(m_prog, "proj");
@@ -102,13 +109,58 @@ void QtViewport::keyPressEvent(QKeyEvent *event)
 	int key = event->key();
 
 	if (key == Qt::Key_W)
-		m_camera->translate(glm::vec3(0.f, 0.f, -0.2f));
+		//m_camera->translate(glm::vec3(0.f, 0.f, -0.2f));
+		m_camera->translateAroundPivot(0.f, 0.05f);
 	else if (key == Qt::Key_S)
-		m_camera->translate(glm::vec3(0.f, 0.f, 0.2f));
+		//m_camera->translate(glm::vec3(0.f, 0.f, 0.2f));
+		m_camera->translateAroundPivot(0.f, -0.05f);
 	else if (key == Qt::Key_A)
-		m_camera->translate(glm::vec3(-0.2f, 0.f, 0.f));
+		//m_camera->translate(glm::vec3(-0.2f, 0.f, 0.f));
+		m_camera->translateAroundPivot(-0.05f, 0.f);
 	else if (key == Qt::Key_D)
-		m_camera->translate(glm::vec3(0.2f, 0.f, 0.f));
+		//m_camera->translate(glm::vec3(0.2f, 0.f, 0.f));
+		m_camera->translateAroundPivot(0.05f, 0.f);
+
+	update();
+}
+
+void QtViewport::mousePressEvent(QMouseEvent *event)
+{
+	if (event->buttons() & Qt::MidButton)
+	{
+		if (event->modifiers() & Qt::SHIFT)
+			m_move_enabled = true;
+		else
+			m_rotate_enabled = true;
+	}
+
+	m_mouse_pos = glm::vec2(event->x(), event->y());
+}
+
+void QtViewport::mouseReleaseEvent(QMouseEvent *event)
+{
+	m_rotate_enabled = false;
+	m_move_enabled = false;
+}
+
+void QtViewport::mouseMoveEvent(QMouseEvent *event)
+{
+	glm::vec2 cur_pos(event->x(), event->y());
+	glm::vec2 delta = cur_pos - m_mouse_pos;
+
+	if (m_rotate_enabled)
+		m_camera->rotateAroundPivot(delta.x, delta.y);
+	if (m_move_enabled)
+		m_camera->translateAroundPivot(delta.x / width(), delta.y / height());
+
+	m_mouse_pos = cur_pos;
+
+	update();
+}
+
+void QtViewport::wheelEvent(QWheelEvent *event)
+{
+	m_camera->zoom(-event->delta() / 360.f);
 
 	update();
 }

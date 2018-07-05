@@ -6,6 +6,7 @@
 #include <QOpenGLBuffer>
 #include <QMatrix4x4>
 #include <glm/glm.hpp>
+#include <glm/vec2.hpp>
 #include <glm/mat4x4.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
@@ -33,6 +34,10 @@ protected:
     void resizeGL(int width, int height) override;
 
 	void keyPressEvent(QKeyEvent *event) override;
+	void mousePressEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
+	void mouseMoveEvent(QMouseEvent *event) override;
+	void wheelEvent(QWheelEvent *event) override;
 
 private:
 	GLuint		m_prog;
@@ -51,4 +56,8 @@ private:
 
     Mesh        m_mesh;
 	Light		m_light;
+
+	glm::vec2	m_mouse_pos;
+	bool		m_move_enabled;
+	bool		m_rotate_enabled;
 };
