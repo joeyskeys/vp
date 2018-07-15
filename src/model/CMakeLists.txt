@@ -3,6 +3,7 @@ set(HEADERS
 	block.h
 	manager.h
 	mesh.h
+	dynamic_mesh.h
 	light.h
 	camera.h
 	shader.h
@@ -10,6 +11,7 @@ set(HEADERS
 	)
 
 set(SOURCES
+	dynamic_mesh.cpp
 	mesh.cpp
 	light.cpp
 	camera.cpp

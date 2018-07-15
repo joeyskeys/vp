@@ -7,7 +7,7 @@ typedef struct MeshObj
 {
 	Cachef verts;
 	Cachef norms;
-	Cachei idx;
+	Cacheu idx;
 } MeshObj;
 
 class Mesh

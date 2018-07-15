@@ -46,7 +46,8 @@ void QtViewport::initializeGL()
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	
-	m_program->load("E:/work/repos/vp/src/shaders/", "basic");
+	//m_program->load("E:/work/repos/vp/src/shaders/", "basic");
+	m_program->load("G:/WorkSpace/repos/vp/src/shaders/", "basic");
 	m_prog = m_program->getProgram();
 
 	m_proj_loc = glGetUniformLocation(m_prog, "proj");
