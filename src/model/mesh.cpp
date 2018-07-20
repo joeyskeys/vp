@@ -22,7 +22,7 @@ Mesh::Mesh(const Mesh& b)
     m->idx = b.m->idx;
     vert_cnt = b.vert_cnt;
     norm_cnt = b.norm_cnt;
-    idx_cnt = b.idx_cnt;
+	tri_cnt = b.tri_cnt;
 }
 
 Mesh& Mesh::operator=(const Mesh& b)
@@ -32,7 +32,7 @@ Mesh& Mesh::operator=(const Mesh& b)
     m->idx = b.m->idx;
     vert_cnt = b.vert_cnt;
     norm_cnt = b.norm_cnt;
-    idx_cnt = b.idx_cnt;
+	tri_cnt = b.tri_cnt;
 
 	return *this;
 }
@@ -51,7 +51,7 @@ void Mesh::fillTriangle()
         0.0f, 0.0f, 1.0f
     };
 
-    static int i[3] = {
+    static unsigned int i[3] = {
         0, 1, 2
     };
 
@@ -60,7 +60,7 @@ void Mesh::fillTriangle()
     m->idx.fillData(3, i);
     vert_cnt = 3;
     norm_cnt = 3;
-    idx_cnt = 1;
+	tri_cnt = 1;
 }
 
 void Mesh::fillCube()
@@ -81,17 +81,47 @@ void Mesh::fillCube()
 	//}
 }
 
-const float* Mesh::getVerts() const
+void Mesh::insertVert(float *v)
 {
-    return m->verts.data;
+	float *buf = m->verts.useNext();
+	buf[0] = v[0];
+	buf[1] = v[1];
+	buf[2] = v[2];
+	vert_cnt++;
 }
 
-const float* Mesh::getNorms() const
+void Mesh::insertVerts(float *v, int cnt)
 {
-    return m->norms.data;
+	m->verts.appendData(v, 3 * cnt);
+	vert_cnt += cnt;
 }
 
-const int* Mesh::getIdx() const
+void Mesh::insertNorm(float *n)
 {
-    return m->idx.data;
+	float *buf = m->norms.useNext();
+	buf[0] = n[0];
+	buf[1] = n[1];
+	buf[2] = n[2];
+	norm_cnt++;
+}
+
+void Mesh::insertNorms(float *n, int cnt)
+{
+	m->norms.appendData(n, 3 * cnt);
+	norm_cnt += cnt;
+}
+
+void Mesh::insertTriangle(unsigned int *i)
+{
+	unsigned int *buf = m->idx.useNext();
+	buf[0] = i[0];
+	buf[1] = i[1];
+	buf[2] = i[2];
+	idx_cnt++;
+}
+
+void Mesh::insertTriangles(unsigned int *i, int cnt)
+{
+	m->idx.appendData(i, 3 * cnt);
+	idx_cnt += cnt;
 }

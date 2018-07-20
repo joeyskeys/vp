@@ -23,6 +23,9 @@ public:
 	void appendData(T* e, unsigned int cnt);
 	T*	 useNext();
 
+	inline unsigned int getIdxOfPtr(T *ptr) { return ptr - data; }
+	inline T*			getPtrOfIdx(unsigned int idx) { return data + idx; }
+
 public:
 	unsigned int size;
 	union

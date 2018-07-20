@@ -13,19 +13,23 @@ typedef Cache<DLoop> DLCache;
 
 struct DVert
 {
-	float **co;
-	DEdge *edges[3];
+	unsigned int idx;
+	float *co;
+	DLoop *loop;
 };
 
 struct DEdge
 {
 	float		 length;
-	DLoop		 *loop1, *loop2;
+	DLoop		 *loops[2];
+
+	inline DLoop* getAvailableLoop() { return loops[0] ? loops[0] : loops[1]; }
+	inline DLoop* getAnotherLoop(DLoop *l) { return loops[0] == l ? loops[1] : loops[0]; }
 };
 
 struct DFace
 {
-	unsigned int **idx;
+	unsigned int *idx;
 	DLoop		 *loops[3];
 };
 
@@ -36,6 +40,7 @@ struct DLoop
 	DEdge		*edge;
 	DFace		*face;
 	DLoop		*next;
+	DLoop		*disk_link;
 };
 
 class DynamicMesh
@@ -43,8 +48,8 @@ class DynamicMesh
 public:
 	explicit DynamicMesh(const Mesh *m);
 	~DynamicMesh();
-	DynamicMesh(const DynamicMesh& b);
-	DynamicMesh& operator=(const DynamicMesh& b);
+	DynamicMesh(const DynamicMesh& b) = delete;
+	DynamicMesh& operator=(const DynamicMesh& b) = delete;
 	DynamicMesh(DynamicMesh&& b);
 	DynamicMesh& operator=(DynamicMesh&& b);
 
@@ -53,9 +58,9 @@ private:
 	DEdge*	addEdge(DVert *v1, DVert *v2);
 	DFace*	addFace(unsigned int *id);
 	DLoop*	addLoop(DVert *st, DVert *ed, DEdge *e, DFace *f);
-	void	addTriangle(DFace *f, DEdge *es, DLoop *ls);
 
 public:
+	void	addTriangle(unsigned int *idx);
 	void	edgeSplit(DEdge *e);
 	void	edgeCollapse(DEdge *e);
 
