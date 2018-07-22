@@ -35,6 +35,7 @@ endif()
 find_path(GLEW_INCLUDE_DIR GL/glew.h
   PATHS
     ${GLEW_ROOT}/include
+    /usr/include
   )
 
 if(NOT GLEW_LIBRARY)
@@ -43,6 +44,7 @@ if(NOT GLEW_LIBRARY)
       GLEW glew32 glew glew32s 
     PATHS
       ${GLEW_ROOT}/lib/Release/x64
+      /usr/lib
     )
   find_library(GLEW_LIBRARY_DEBUG NAMES GLEWd glew32d glewd PATH_SUFFIXES lib64)
 endif ()

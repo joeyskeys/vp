@@ -4,6 +4,7 @@
 //#include "light.h"
 
 #include <cstring>
+#include <cstdlib>
 
 using namespace std;
 

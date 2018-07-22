@@ -24,7 +24,7 @@ DynamicMesh::DynamicMesh(const Mesh *m):
 		DFace *f = addFace(indices);
 		DLoop *new_loops[3];
 		
-		for (int old_idx = 2, int j = 0; j < 3; old_idx = j, j++)
+		for (int old_idx = 2, j = 0; j < 3; old_idx = j, j++)
 		{
 			DVert *v1 = vcache.getPtrOfIdx(indices[j]);
 			DVert *v2 = vcache.getPtrOfIdx(old_idx);
@@ -47,7 +47,7 @@ DynamicMesh::DynamicMesh(const Mesh *m):
 			f->loops[j] = new_loops[j];
 		}
 
-		for (int old_idx = 2, int j = 0; j < 3; old_idx = j, j++)
+		for (int old_idx = 2, j = 0; j < 3; old_idx = j, j++)
 		{
 			new_loops[j]->next = new_loops[(j + 1) & 0b11];
 			new_loops[j]->disk_link = new_loops[j]->edge->getAnotherLoop(new_loops[j]);
@@ -82,6 +82,8 @@ DynamicMesh& DynamicMesh::operator=(DynamicMesh&& b)
 	ecache = std::move(b.ecache);
 	fcache = std::move(b.fcache);
 	lcache = std::move(b.lcache);
+
+    return *this;
 }
 
 DVert* DynamicMesh::addVert(float *c)

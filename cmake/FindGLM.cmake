@@ -9,6 +9,7 @@ endif()
 find_path(GLM_INCLUDE_DIRS
     NAMES glm/glm.hpp
     PATHS ${GLM_ROOT}/include
+          /usr/include
     )
 
 include(FindPackageHandleStandardArgs)

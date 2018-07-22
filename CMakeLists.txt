@@ -4,13 +4,18 @@ if (NOT CMAKE_BUILD_TYPE)
     set (CMAKE_BUILD_TYPE Debug CACHE STRING "Choose the type of build, options are: ${CMAKE_CONFIGURATION_TYPES}")
 endif()
 
+set(CMAKE_CXX_STANDARD 11)
+
 project(vp)
 
 set(CMAKE_AUTOMOC ON)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
+if (WIN32)
 set(CMAKE_PREFIX_PATH "G:/QT/program/5.10.1/msvc2013_64" CACHE PATH "Location of Qt")
+endif()
+
 find_package(Qt5Widgets)
 find_package(Qt5Core)
 find_package(Qt5Gui)

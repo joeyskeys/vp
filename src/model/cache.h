@@ -38,7 +38,7 @@ public:
 
 template <typename T>
 Cache<T>::Cache():
-	size(0), offset(10 * sizeof(T)), data(malloc(10 * sizeof(T)))
+	size(0), offset(10 * sizeof(T)), data((T*)malloc(10 * sizeof(T)))
 {
 
 }
@@ -103,7 +103,7 @@ Cache<T>& Cache<T>::operator=(Cache<T>&& b)
 template<typename T>
 void Cache<T>::reserve(unsigned int c)
 {
-	new_size = c * sizeof(T);
+	size_t new_size = c * sizeof(T);
 	if (size >= new_size)
 		return;
 
@@ -145,14 +145,14 @@ void Cache<T>::appendData(T *e, unsigned int cnt)
 	unsigned int new_size = size + stream_size;
 	if (new_size > capability)
 	{
-		float ratio = static_cast<float>new_size / capability;
+		float ratio = static_cast<float>(new_size) / capability;
 		if (ratio < 1.5f)
 			enlarge();
 		else
 			enlarge(ratio + 0.5f);
 	}
 
-	char *tmp = data;
+	char *tmp = (char*)data;
 	memcpy(tmp + size, e, stream_size);
 	size = new_size;
 }
@@ -163,10 +163,10 @@ T* Cache<T>::useNext()
 	if (size >= capability)
 		enlarge();
 
-	char *tmp = data;
+	char *tmp = (char*)data;
 	tmp += size;
 	size += sizeof(T);
-	return tmp;
+	return (T*)tmp;
 }
 
 typedef Cache<int> Cachei;
@@ -218,6 +218,8 @@ public:
 		size = cppstr.size();
 		data = (char*)malloc(size);
 		memcpy(data, cppstr.c_str(), size);
+
+        return *this;
 	}
 
 	inline const char* c_str()

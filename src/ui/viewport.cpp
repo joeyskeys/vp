@@ -7,6 +7,7 @@
 #include <QPoint>
 
 #include <cstring>
+#include <stdexcept>
 
 QtViewport::QtViewport(QWidget *parent) :
 	QOpenGLWidget(parent),
@@ -39,7 +40,10 @@ QtViewport::~QtViewport()
 void QtViewport::initializeGL()
 {
 	if (glewInit() != GLEW_OK)
-		throw std::exception("Failed to initialize GLEW\n");
+    {
+        std::logic_error ex("Failed to initialize GLEW\n");
+		throw std::exception(ex);
+    }
     
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
