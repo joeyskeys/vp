@@ -40,6 +40,12 @@ public:
 	void				insertNorms(float *n, int cnt);
 	void				insertTriangle(unsigned int *i);
 	void				insertTriangles(unsigned int *i, int cnt);
+	inline void			deleteVert(float *v) { m->verts.removePtrWithCnt(v, 3); }
+	inline void			deleteVerts(float *v, int cnt) { m->verts.removePtrWithCnt(v, 3 * cnt); }
+	inline void			deleteNorm(float *n) { m->norms.removePtrWithCnt(n, 3); }
+	inline void			deleteNorms(float *n, int cnt) { m->norms.removePtrWithCnt(n, 3 * cnt); }
+	inline void			deleteTriangle(unsigned int *i) { m->idx.removePtrWithCnt(i, 3); }
+	inline void			deleteTriangles(unsigned int *i, int cnt) { m->idx.removePtrWithCnt(i, 3 * cnt); }
 
 private:
 	MeshObj *m;

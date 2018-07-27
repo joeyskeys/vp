@@ -1,6 +1,8 @@
 #include "mesh.h"
 #include "cache.h"
 
+#include <glm/vec3.hpp>
+
 typedef struct DVert DVert;
 typedef struct DEdge DEdge;
 typedef struct DFace DFace;
@@ -16,6 +18,9 @@ struct DVert
 	unsigned int idx;
 	float *co;
 	DLoop *loop;
+
+	inline void setValue(float *v) { for (int i = 0; i < 3; i++) co[i] = v[i]; }
+	inline void setValue(glm::vec3 *v) { co[0] = v->x; co[1] = v->y; co[2] = v->z; }
 };
 
 struct DEdge
@@ -23,14 +28,18 @@ struct DEdge
 	float		 length;
 	DLoop		 *loops[2];
 
+	inline void	  updateLength(DVert *v1, DVert *v2) { length = glm::length(glm::make_vec3(v1->co) - glm::make_vec3(v2->co)); }
 	inline DLoop* getAvailableLoop() { return loops[0] ? loops[0] : loops[1]; }
 	inline DLoop* getAnotherLoop(DLoop *l) { return loops[0] == l ? loops[1] : loops[0]; }
+	inline int	  getIdxOfLoop(DLoop *l) { return loops[0] == l ? 0 : 1; }
 };
 
 struct DFace
 {
 	unsigned int *idx;
 	DLoop		 *loops[3];
+
+	inline int    getIdxOfLoop(DLoop *l) { return loops[0] == l ? 0 : (loops[1] == l ? 1 : 2); }
 };
 
 struct DLoop
@@ -40,7 +49,11 @@ struct DLoop
 	DEdge		*edge;
 	DFace		*face;
 	DLoop		*next;
-	DLoop		*disk_link;
+	DLoop		*disk_next;
+	DLoop		*disk_prev;
+
+	inline void	  evalDiskNext() { DLoop *tmp = next->next; disk_next = tmp->edge->getAnotherLoop(tmp); }
+	inline void   evalDiskPrev() { DLoop *tmp = edge->getAnotherLoop(this); disk_prev = tmp ? tmp->next : nullptr; }
 };
 
 class DynamicMesh
@@ -58,6 +71,10 @@ private:
 	DEdge*	addEdge(DVert *v1, DVert *v2);
 	DFace*	addFace(unsigned int *id);
 	DLoop*	addLoop(DVert *st, DVert *ed, DEdge *e, DFace *f);
+	inline void	  deleteVert(DVert *v) { vcache.deletePtr(v); mesh->deleteVert(v->co); }
+	inline void   deleteEdge(DEdge *e) { ecache.deletePtr(e); }
+	inline void   deleteFace(DFace *f) { fcache.deletePtr(f); mesh->deleteTriangle(f->idx); }
+	inline void	  deleteLoop(DLoop *l) { lcache.deletePtr(l); }
 
 public:
 	void	addTriangle(unsigned int *idx);
