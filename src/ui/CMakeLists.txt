@@ -8,6 +8,7 @@ if (WIN32)
 		opengl32.lib)
 else()
 	set(PLATFORM_SPEC_LIBS
+        ${OPENGL_LIBRARIES}
 		)
 endif()
 
