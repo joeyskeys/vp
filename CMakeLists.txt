@@ -24,10 +24,18 @@ include_directories(${Qt5Widgets_INCLUDE_DIRS}
                     ${Qt5Core_INCLUDE_DIRS}
                     ${Qt5Gui_INCLUDE_DIRS})
 
+if (Qt5_POSITION_INDEPENDENT_CODE)
+    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+endif()
+
 find_package(GLM)
 include_directories(${GLM_INCLUDE_DIRS})
 
 find_package(GLEW)
 include_directories(${GLEW_INCLUDE_DIRS})
+
+if (UNIX)
+    find_package(OpenGL)
+endif()
 
 add_subdirectory(src)

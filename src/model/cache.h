@@ -52,7 +52,9 @@ template <typename T>
 Cache<T>::~Cache()
 {
 	if (data)
+    {
 		free(data);
+    }
 }
 
 template <typename T>
@@ -193,8 +195,8 @@ public:
 
 	~Str()
 	{
-		if (data)
-			free(data);
+        // cache destructor isn't virtual to keep struct size
+        // do dealloc here will cause double free
 	}
 
 	Str(const Str& rhs): Cachec(rhs) {}

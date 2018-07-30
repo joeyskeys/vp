@@ -33,3 +33,6 @@
 
 # Build Directory
 build
+
+# ctags file
+tags

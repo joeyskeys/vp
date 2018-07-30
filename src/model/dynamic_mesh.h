@@ -1,7 +1,10 @@
 #include "mesh.h"
 #include "cache.h"
 
+#include <glm/glm.hpp>
 #include <glm/vec3.hpp>
+#include <glm/geometric.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 typedef struct DVert DVert;
 typedef struct DEdge DEdge;
@@ -32,6 +35,7 @@ struct DEdge
 	inline DLoop* getAvailableLoop() { return loops[0] ? loops[0] : loops[1]; }
 	inline DLoop* getAnotherLoop(DLoop *l) { return loops[0] == l ? loops[1] : loops[0]; }
 	inline int	  getIdxOfLoop(DLoop *l) { return loops[0] == l ? 0 : 1; }
+    inline int    getAnotherIdxOfLoop(DLoop *l) { return loops[0] == l ? 1 : 0; }
 };
 
 struct DFace
@@ -71,7 +75,7 @@ private:
 	DEdge*	addEdge(DVert *v1, DVert *v2);
 	DFace*	addFace(unsigned int *id);
 	DLoop*	addLoop(DVert *st, DVert *ed, DEdge *e, DFace *f);
-	inline void	  deleteVert(DVert *v) { vcache.deletePtr(v); mesh->deleteVert(v->co); }
+	inline void	  deleteVert(DVert *v) { vcache.deletePtr(v); /* mesh->deleteVert(v->co);*/} // delete vertex directly will cause indices being messed up
 	inline void   deleteEdge(DEdge *e) { ecache.deletePtr(e); }
 	inline void   deleteFace(DFace *f) { fcache.deletePtr(f); mesh->deleteTriangle(f->idx); }
 	inline void	  deleteLoop(DLoop *l) { lcache.deletePtr(l); }

@@ -159,8 +159,9 @@ void DynamicMesh::edgeSplit(DEdge *e)
 	for (int i = 0; i < 4; i++)
 		new_mid_loops[i] = nullptr;
 	DLoop *old_loops[2];
-	old_loops[0] = e->loops[0];
-	old_loops[1] = e->loops[1];
+    // arrange the loop order with respect to the first found loop
+	old_loops[0] = l;
+	old_loops[1] = e->getAnotherLoop(l);
 
 	for (int i = 0; i < 2; i++)
 	{
@@ -232,16 +233,51 @@ void DynamicMesh::edgeSplit(DEdge *e)
 
 void DynamicMesh::edgeCollapse(DEdge *e)
 {
+    // adjust the first found loop's start vertex into new
 	DLoop *l = e->getAvailableLoop();
-	glm::vec3 v = (glm::make_vec3(l->start->co) + glm::make_vec3(l->end->co)) / 2.f;
-	l->start->setValue(&v);
+	glm::vec3 co = (glm::make_vec3(l->start->co) + glm::make_vec3(l->end->co)) / 2.f;
+    DVert *v = l->start;
+    DVert *remove_v = l->end;
+    v->setValue(&co);
 
 	DLoop *old_loops[2];
-	old_loops[0] = e->loops[0];
-	old_loops[1] = e->loops[1];
+	old_loops[0] = l;
+	old_loops[1] = e->getAnotherLoop(l);
 
 	for (int i = 0; i < 2; i++)
 	{
 		DLoop *current_l = old_loops[i];
+        if (!current_l)
+            continue;
+        
+        DLoop *remove_l_left, *remove_l_right;
+        DEdge *remove_e, *preserve_e;
+        if (current_l->start == v)
+        {
+            remove_e = current_l->next->edge;
+            preserve_e = current_l->next->next->edge;
+            remove_l_left = current_l->next->next;
+            remove_l_right = current_l->next;
+        }
+        else
+        {
+            remove_e = current_l->next->next->edge;
+            preserve_e = current_l->next->edge;
+            remove_l_left = current_l->next;
+            remove_l_right = current_l->next->next;
+        }
+        
+        preserve_e->loops[preserve_e->getAnotherIdxOfLoop(remove_l_left)] = remove_e->getAnotherLoop(remove_l_right);
+
+        // delete loops, current_l will be invalid since then
+        DFace *f = current_l->face;
+        for (int i = 0; i < 3; i++)
+            deleteLoop(f->loops[i]);
+        deleteFace(f);
+        deleteEdge(remove_e);
 	}
+    
+    // delete the left elements
+    deleteVert(remove_v);
+    deleteEdge(e);
 }
