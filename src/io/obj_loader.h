@@ -24,5 +24,6 @@ private:
 	std::vector<float> verts;
 	std::vector<float> norms;
 	std::vector<unsigned int> indices;
+    std::vector<unsigned int> norm_indices;
 	std::vector<unsigned int> objects;
 };

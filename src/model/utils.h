@@ -1,5 +1,8 @@
 #include <memory>
+#include <fstream>
 
 using auto_buffer = std::unique_ptr<char[]>;
 
-std::unique_ptr<char[]> readAll(std::string& filepath);
+size_t getFileSize(std::ifstream& f);
+auto_buffer readAll(std::string& filepath);
+auto_buffer readAll(std::ifstream& f);
