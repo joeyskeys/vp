@@ -2,11 +2,11 @@
 
 size_t getFileSize(std::ifstream& f)
 {
-	f.seekg(0, ios::beg);
-	streampos pos = f.tellg();
-	f.seekg(0, ios::end);
+	f.seekg(0, std::ios::beg);
+    std::streampos pos = f.tellg();
+	f.seekg(0, std::ios::end);
 	size_t size = f.tellg() - pos;
-	f.seekg(0, ios::beg);
+	f.seekg(0, std::ios::beg);
     return size + 1;
 }
 
@@ -28,7 +28,8 @@ auto_buffer readAll(std::ifstream& f)
     size_t size = getFileSize(f);
     auto_buffer buf{new char[size]};
     f.read(buf.get(), size);
-    auto_buffer[size] = 0;
+    char *buf_ptr = buf.get();
+    buf_ptr[size] = 0;
 
     return buf;
 }

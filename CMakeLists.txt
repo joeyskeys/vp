@@ -35,6 +35,7 @@ find_package(GLEW)
 include_directories(${GLEW_INCLUDE_DIRS})
 
 if (UNIX)
+    set(OpenGL_GL_PREFERENCE LEGACY)
     find_package(OpenGL)
 endif()
 

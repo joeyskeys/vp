@@ -8,6 +8,7 @@ set(HEADERS
 	camera.h
 	shader.h
 	material.h
+    utils.h
 	)
 
 set(SOURCES
@@ -17,6 +18,7 @@ set(SOURCES
 	camera.cpp
 	shader.cpp
 	material.cpp
+    utils.cpp
 	)
 
 add_library(model STATIC

@@ -1,5 +1,7 @@
 #include "viewport.h"
 
+#include <io/obj_loader.h>
+
 #include <QOpenGLShaderProgram>
 #include <QKeyEvent>
 #include <QMouseEvent>
@@ -16,6 +18,9 @@ QtViewport::QtViewport(QWidget *parent) :
 	m_rotate_enabled(false)
 {
     m_mesh.fillTriangle();
+    ObjLoader loader;
+    //loader.load("/mnt/media/workspace/repos/self/vp/src/asset/cube.obj");
+    //loader.fillMesh(&m_mesh);
 	m_light.setType(LIGHT_PNT);
 	m_light.setPosition(glm::vec3(0.0f, 0.0f, -0.8f));
 	m_light.setColor(glm::vec3(1.0f, 1.0f, 1.0f));

@@ -14,11 +14,14 @@ public:
 	ObjLoader();
 	~ObjLoader();
 	ObjLoader(const ObjLoader& rhs);
-	ObjLoader& operator=(const ObjLoader& rhs)
+	ObjLoader& operator=(const ObjLoader& rhs);
 
-	void load(std::string &path);
+	void load(std::string &&path);
 	void reset();
 	void fillMesh(Mesh *mesh);
+    void loadIntoMesh(Mesh *mesh);
+
+    void printInfo();
 
 private:
 	std::vector<float> verts;

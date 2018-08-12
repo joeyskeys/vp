@@ -10,6 +10,11 @@ add_library(io STATIC
 	${SOURCES}
 	)
 
+target_link_libraries(io
+    general
+        model
+    )
+
 source_group("Header Files"
 	FILES
 		${HEADERS}

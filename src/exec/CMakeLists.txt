@@ -6,6 +6,7 @@ target_link_libraries(mainwin
 	general
 		viewport
         model
+        io
 	    Qt5::Widgets
 	    Qt5::Core
 	    Qt5::Gui
