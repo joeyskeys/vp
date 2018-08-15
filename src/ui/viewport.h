@@ -44,7 +44,7 @@ private:
 	ShaderProgram *m_program;
 	Camera		*m_camera;
 
-	GLuint		m_vbo1, m_vbo2;
+	GLuint		m_vbo1, m_vbo2, m_vbo_idx;
 	GLuint		m_vao;
 
     GLuint      m_proj_loc;

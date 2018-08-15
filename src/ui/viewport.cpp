@@ -10,6 +10,7 @@
 
 #include <cstring>
 #include <stdexcept>
+#include <iostream>
 
 QtViewport::QtViewport(QWidget *parent) :
 	QOpenGLWidget(parent),
@@ -17,10 +18,13 @@ QtViewport::QtViewport(QWidget *parent) :
 	m_move_enabled(false),
 	m_rotate_enabled(false)
 {
-    m_mesh.fillTriangle();
+    //m_mesh.fillTriangle();
     ObjLoader loader;
-    //loader.load("/mnt/media/workspace/repos/self/vp/src/asset/cube.obj");
-    //loader.fillMesh(&m_mesh);
+    loader.load("/mnt/media/workspace/repos/self/vp/src/asset/cube.obj");
+    loader.fillMesh(&m_mesh);
+    std::cout << "load finished" << std::endl;
+    std::cout << "vert cnt : " << m_mesh.getVertCount() << std::endl;
+    std::cout << "idx cnt : " << m_mesh.getTriCount() << std::endl;
 	m_light.setType(LIGHT_PNT);
 	m_light.setPosition(glm::vec3(0.0f, 0.0f, -0.8f));
 	m_light.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -47,6 +51,7 @@ void QtViewport::initializeGL()
 	if (glewInit() != GLEW_OK)
     {
         std::logic_error ex("Failed to initialize GLEW\n");
+        std::cout << "glew init failed" << std::endl;
 		throw std::exception(ex);
     }
     
@@ -74,12 +79,16 @@ void QtViewport::initializeGL()
 	glGenBuffers(1, &m_vbo2);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo2);
 	glBufferData(GL_ARRAY_BUFFER, m_mesh.getNormSize(), m_mesh.getNorms(), GL_STATIC_DRAW);
+    glGenBuffers(1, &m_vbo_idx);
+    glBindBuffer(GL_ARRAY_BUFFER, m_vbo_idx);
+    glBufferData(GL_ARRAY_BUFFER, m_mesh.getIdxSize(), m_mesh.getIdx(), GL_STATIC_DRAW);
 }
 
 void QtViewport::clearGL()
 {
 	glDeleteBuffers(1, &m_vbo1);
 	glDeleteBuffers(1, &m_vbo2);
+    glDeleteBuffers(1, &m_vbo_idx);
 	glDeleteBuffers(1, &m_vao);
 	//if (m_prog)
 	//	glDeleteProgram(m_prog);
@@ -104,10 +113,11 @@ void QtViewport::paintGL()
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo2);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    //glDrawArrays(GL_TRIANGLES, 0, 3);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vbo_idx);
+    glDrawElements(GL_TRIANGLES, m_mesh.getIdxSize(), GL_UNSIGNED_INT, (void*)0);
 	glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
-	
 }
 
 void QtViewport::resizeGL(int width, int height)

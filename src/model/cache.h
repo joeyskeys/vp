@@ -21,6 +21,7 @@ public:
 	void enlarge(float ratio=1.618f);
 	void fillData(unsigned int c, T *d);
 	void appendData(T* e, unsigned int cnt);
+    void copyData(T* e, unsigned int cnt);
 	T*	 useNext();
 
 	inline unsigned int getIdxOfPtr(T *ptr) { return ptr - data; }
@@ -162,6 +163,24 @@ void Cache<T>::appendData(T *e, unsigned int cnt)
 	char *tmp = (char*)data;
 	memcpy(tmp + size, e, stream_size);
 	size = new_size;
+}
+
+template<typename T>
+void Cache<T>::copyData(T *e, unsigned int cnt)
+{
+    unsigned int stream_size = cnt * sizeof(T);
+    if (stream_size > capability)
+    {
+        float ratio = static_cast<float>(stream_size) / capability;
+        if (ratio < 1.5f)
+            enlarge();
+        else
+            enlarge(ratio + 0.5f);
+    }
+
+    char *tmp = (char*)data;
+    memcpy(tmp, e, stream_size);
+    size = stream_size;
 }
 
 template<typename T>

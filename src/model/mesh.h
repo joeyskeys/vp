@@ -36,10 +36,13 @@ public:
 
 	void				insertVert(float *v);
 	void				insertVerts(float *v, int cnt);
+    void                copyVerts(float *v, int cnt);
 	void				insertNorm(float *n);
 	void				insertNorms(float *n, int cnt);
+    void                copyNorms(float *n, int cnt);
 	void				insertTriangle(unsigned int *i);
 	void				insertTriangles(unsigned int *i, int cnt);
+    void                copyTriangles(unsigned int *i, int cnt);
 	inline void			deleteVert(float *v) { m->verts.deletePtrWithCnt(v, 3); }
 	inline void			deleteVerts(float *v, int cnt) { m->verts.deletePtrWithCnt(v, 3 * cnt); }
 	inline void			deleteNorm(float *n) { m->norms.deletePtrWithCnt(n, 3); }

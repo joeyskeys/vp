@@ -62,7 +62,10 @@ static bool readLine(char **buf_ptr, const char *end, std::string& line)
 
     line = std::string(*buf_ptr, curr - *buf_ptr);
     *buf_ptr = curr + 1;
-    return true;
+    if (curr < end)
+        return true;
+    else
+        return false;
 }
 
 static std::vector<std::string> splitLine(std::string& line, std::string&& delimiter)
@@ -103,7 +106,7 @@ void ObjLoader::load(std::string &&path)
         
     if (filesize < BUFFER_SIZE)
     {
-        std::cout << "read all" << std::endl;
+        //std::cout << "read all" << std::endl;
         buf = readAll(f);
         reading = false;
         buffer_size = filesize;
@@ -127,7 +130,7 @@ void ObjLoader::load(std::string &&path)
 
         while (readLine(&head, end, line))
         {
-            std::cout << "read line " << line << std::endl;
+            //std::cout << "read line " << line << std::endl;
             std::vector<std::string> subs = splitLine(line, " ");
             char type = subs[0][0];
 
@@ -184,7 +187,7 @@ void ObjLoader::load(std::string &&path)
                     {
                         std::vector<std::string> f_subs = splitLine(subs[i], "/");
                         int cnt = f_subs.size();
-                        indices.push_back(std::stoi(f_subs[0]));
+                        indices.push_back(std::stoi(f_subs[0]) - 1);
 
                         if (cnt == 2)
                         {
@@ -246,7 +249,7 @@ void ObjLoader::load(std::string &&path)
         }
         else
         {
-            if (f.eof())
+            if (f.eof() || !reading)
                 break;
         }
 
@@ -271,9 +274,9 @@ void ObjLoader::reset()
 
 void ObjLoader::fillMesh(Mesh *mesh)
 {
-    mesh->insertVerts(verts.data(), verts.size() / 3);
-    mesh->insertNorms(norms.data(), norms.size() / 3);
-    mesh->insertTriangles(indices.data(), indices.size() / 3);
+    mesh->copyVerts(verts.data(), verts.size() / 3);
+    mesh->copyNorms(norms.data(), norms.size() / 3);
+    mesh->copyTriangles(indices.data(), indices.size() / 3);
 }
 
 void ObjLoader::loadIntoMesh(Mesh *mesh)

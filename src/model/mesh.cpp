@@ -4,7 +4,11 @@
 
 MeshManager* Mesh::mgr = MeshManager::getInstance();
 
-Mesh::Mesh()
+Mesh::Mesh():
+    vert_cnt(0),
+    norm_cnt(0),
+    idx_cnt(0),
+    tri_cnt(0)
 {
     void *t = mgr->getNext();
     m = new (t) MeshObj;
@@ -96,6 +100,12 @@ void Mesh::insertVerts(float *v, int cnt)
 	vert_cnt += cnt;
 }
 
+void Mesh::copyVerts(float *v, int cnt)
+{
+    m->verts.copyData(v, 3 * cnt);
+    vert_cnt = cnt;
+}
+
 void Mesh::insertNorm(float *n)
 {
 	float *buf = m->norms.useNext();
@@ -111,6 +121,12 @@ void Mesh::insertNorms(float *n, int cnt)
 	norm_cnt += cnt;
 }
 
+void Mesh::copyNorms(float *n, int cnt)
+{
+    m->norms.copyData(n, 3 * cnt);
+    norm_cnt = cnt;
+}
+
 void Mesh::insertTriangle(unsigned int *i)
 {
 	unsigned int *buf = m->idx.useNext();
@@ -122,6 +138,16 @@ void Mesh::insertTriangle(unsigned int *i)
 
 void Mesh::insertTriangles(unsigned int *i, int cnt)
 {
-	m->idx.appendData(i, 3 * cnt);
-	idx_cnt += cnt;
+    int tmp = 3 * cnt;
+	m->idx.appendData(i, tmp);
+	idx_cnt += tmp;
+    tri_cnt += cnt;
+}
+
+void Mesh::copyTriangles(unsigned int *i, int cnt)
+{
+    int tmp = 3 * cnt;
+    m->idx.copyData(i, tmp);
+    idx_cnt = tmp;
+    tri_cnt = cnt;
 }
