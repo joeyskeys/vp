@@ -148,8 +148,8 @@ void ObjLoader::load(std::string &&path)
                     {
                         // vertex
                         verts.push_back(std::stof(subs[1]));
+                        verts.push_back(std::stof(-subs[3]));
                         verts.push_back(std::stof(subs[2]));
-                        verts.push_back(std::stof(subs[3]));
                     }
                     else
                     {
