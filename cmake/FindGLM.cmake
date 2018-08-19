@@ -2,11 +2,11 @@ if(NOT GLM_ROOT)
     if(WIN32)
         set(GLM_ROOT "G:/WorkSpace/installed_libs/glm" CACHE PATH "Location of glm")
     else()
-        set(GLM_ROOT "/usr/local" CACHE PATH "Location of glm")
+        set(GLM_ROOT "/usr" CACHE PATH "Location of glm")
     endif()
 endif()
 
-find_path(GLM_INCLUDE_DIRS
+find_path(GLM_INCLUDE_PATH
     NAMES glm/glm.hpp
     PATHS ${GLM_ROOT}/include
           /usr/include

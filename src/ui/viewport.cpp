@@ -19,9 +19,11 @@ QtViewport::QtViewport(QWidget *parent) :
 	m_rotate_enabled(false)
 {
     //m_mesh.fillTriangle();
-    ObjLoader loader;
-    loader.load("/mnt/media/workspace/repos/self/vp/src/asset/cube.obj");
-    loader.fillMesh(&m_mesh);
+    m_mesh.fillCube();
+    m_mesh.updateExpandedMesh();
+    //ObjLoader loader;
+    //loader.load("/mnt/media/workspace/repos/self/vp/src/asset/cube.obj");
+    //loader.fillMesh(&m_mesh);
     std::cout << "load finished" << std::endl;
     std::cout << "vert cnt : " << m_mesh.getVertCount() << std::endl;
     std::cout << "idx cnt : " << m_mesh.getTriCount() << std::endl;
@@ -113,7 +115,7 @@ void QtViewport::paintGL()
 	glEnableVertexAttribArray(1);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo2);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    //glDrawArrays(GL_TRIANGLES, 0, 3);
+    //glDrawArrays(GL_TRIANGLES, 0, m_mesh.getIdxCount());
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vbo_idx);
     glDrawElements(GL_TRIANGLES, m_mesh.getIdxSize(), GL_UNSIGNED_INT, (void*)0);
 	glDisableVertexAttribArray(0);

@@ -21,6 +21,9 @@ public:
 	void fillTriangle();
 	void fillCube();
 
+    void updateExpandedMesh();
+
+    inline MeshObj*     getMeshObj() const { return m; }
 	inline float*		getVerts() const { return m->verts.data; }
 	inline float*		getVertAt(int i) const { return m->verts.data + 3 * i; }
 	inline float*		getNorms() const { return m->norms.data; }
@@ -29,6 +32,7 @@ public:
 	inline unsigned int*	getIdxAt(int i) const { return m->idx.data + 3 * i; }
 	inline const int 	getVertCount() const { return vert_cnt; }
 	inline const int 	getNormCount() const { return norm_cnt; }
+    inline const int    getIdxCount() const { return idx_cnt; }
 	inline const int	getTriCount() const { return tri_cnt; }
 	inline const size_t	getVertSize() const { return vert_cnt * sizeof(float) * 3; }
 	inline const size_t getNormSize() const { return norm_cnt * sizeof(float) * 3; }
@@ -56,6 +60,9 @@ private:
 	int 	norm_cnt;
 	int		idx_cnt;
 	int		tri_cnt;
+
+    Cachef  expanded_verts;
+    Cachef  expanded_norms;
 
     static MeshManager *mgr;
 };

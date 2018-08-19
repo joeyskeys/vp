@@ -17,6 +17,7 @@ public:
 	Cache(Cache<T>&& b);
 	Cache& operator=(Cache<T>&& b);
 
+    void clear();
 	void reserve(unsigned int c);
 	void enlarge(float ratio=1.618f);
 	void fillData(unsigned int c, T *d);
@@ -31,6 +32,10 @@ public:
 	inline void			deletePtr(T *ptr) { *ptr = data[getCount() - 1]; size -= sizeof(T); }
 	inline void			deleteIdxWithCnt(int idx, int cnt) { memcpy(data + idx, data + getCount() - cnt, cnt * sizeof(T)); }
 	inline void			deletePtrWithCnt(T *ptr, int cnt) { memcpy(ptr, data + getCount() - cnt, cnt * sizeof(T)); }
+    inline void setData(T& e, unsigned int idx) { data[idx] = e; }
+
+    T& operator[] (unsigned int idx);
+    const T& operator[] (unsigned int idx) const;
 
 public:
 	unsigned int size;
@@ -109,10 +114,16 @@ Cache<T>& Cache<T>::operator=(Cache<T>&& b)
 }
 
 template<typename T>
+void Cache<T>::clear()
+{
+    size = 0;
+}
+
+template<typename T>
 void Cache<T>::reserve(unsigned int c)
 {
 	size_t new_size = c * sizeof(T);
-	if (size >= new_size)
+	if (capability >= new_size)
 		return;
 
 	T *tmp = (T*)malloc(new_size);
@@ -122,6 +133,7 @@ void Cache<T>::reserve(unsigned int c)
 		free(data);
 	}
 	data = tmp;
+    size = new_size;
 }
 
 template<typename T>
@@ -193,6 +205,18 @@ T* Cache<T>::useNext()
 	tmp += size;
 	size += sizeof(T);
 	return (T*)tmp;
+}
+
+template<typename T>
+T& Cache<T>::operator[] (unsigned int idx)
+{
+    return data[idx];       
+}
+
+template<typename T>
+const T& Cache<T>::operator[] (unsigned int idx) const
+{
+    return data[idx];
 }
 
 typedef Cache<int> Cachei;
