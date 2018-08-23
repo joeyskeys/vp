@@ -1,5 +1,6 @@
 #include "cache.h"
 #include "manager.h"
+#include "uniformtable.h"
 
 #include <GL/glew.h>
 
@@ -34,8 +35,9 @@ public:
     }
 
 private:
-    ShaderProgramObj *s;
-    GLuint  program;
+    ShaderProgramObj    *s;
+    GLuint              program;
+    UniformTable        uniform_table;
     
     static ShaderProgramManager *mgr;
 };

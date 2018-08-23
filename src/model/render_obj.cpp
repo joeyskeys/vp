@@ -22,6 +22,7 @@ RenderObj::RenderObj(RenderObj&& b)
 RenderObj& RenderObj::operator=(RenderObj&& b)
 {
     *this(b);
+    return *this;
 }
 
 void RenderObj::setVertData(Cachef& v)

@@ -10,23 +10,23 @@ size_t getFileSize(std::ifstream& f)
     return size + 1;
 }
 
-auto_buffer readAll(std::string& filepath)
+AutoBuffer readAll(std::string& filepath)
 {
     std::ifstream f(filepath, std::ios::in | std::ios::binary);
 	if (!f.good())
 		return nullptr;
 
-    auto_buffer buf;
+    AutoBuffer buf;
     buf = readAll(f);
 	f.close();
 
 	return buf;
 }
 
-auto_buffer readAll(std::ifstream& f)
+AutoBuffer readAll(std::ifstream& f)
 {
     size_t size = getFileSize(f);
-    auto_buffer buf{new char[size]};
+    AutoBuffer buf{new char[size]};
     f.read(buf.get(), size);
     char *buf_ptr = buf.get();
     buf_ptr[size] = 0;

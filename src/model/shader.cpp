@@ -17,7 +17,7 @@ ShaderProgram::ShaderProgram():
 ShaderProgram::~ShaderProgram()
 {
     if (program)
-        glDeleteShader(program);
+        glDeleteProgram(program);
     s->~ShaderProgramObj();
 }
 
@@ -84,6 +84,14 @@ bool ShaderProgram::load(const string& p, const string& n)
     ifstream ff(fpath, ios::in | ios::binary);
     if (!ff.good())
         return false;
+        
+    string upath = p + n + ".json";
+    ifstream uf(upath, ios::in | ios::binary);
+    if (!uf.good())
+        return false;
+
+    if (!uniform_table.loadDescription(upath))
+        return false;
 
     char    *buf;
     size_t  size;
@@ -92,9 +100,7 @@ bool ShaderProgram::load(const string& p, const string& n)
     buf = (char*)malloc(size + 1);
     vf.read(buf, size);
 	buf[size] = 0;
-	//FILE *vff = fopen(vpath.c_str(), "r");
-	//fread(buf, 1, size, vff);
-	//fclose(vff);
+
 	vf.close();
     GLuint vs = loadShader(GL_VERTEX_SHADER, buf, size + 1);
     free(buf);
@@ -111,6 +117,8 @@ bool ShaderProgram::load(const string& p, const string& n)
     if (!fs)
         return false;
 
+    if (program)
+        glDeleteProgram(program);
     program = glCreateProgram();
     glAttachShader(program, vs);
     glAttachShader(program, fs);
@@ -126,6 +134,7 @@ bool ShaderProgram::load(const string& p, const string& n)
 		cout << buf << endl;
         free(buf);
         glDeleteProgram(program);
+        program = 0;
         glDeleteShader(vs);
         glDeleteShader(fs);
         return false;

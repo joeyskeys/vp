@@ -100,7 +100,7 @@ void ObjLoader::load(std::string &&path)
         return;
 
     size_t filesize = getFileSize(f);
-    auto_buffer buf;
+    AutoBuffer buf;
     bool reading = true;
     int  buffer_size = BUFFER_SIZE;
         
@@ -115,7 +115,7 @@ void ObjLoader::load(std::string &&path)
     else
     {
         std::cout << "read part" << std::endl;
-        buf = auto_buffer(new char[BUFFER_SIZE]);
+        buf = AutoBuffer(new char[BUFFER_SIZE]);
         f.read(buf.get(), BUFFER_SIZE);
     }
     
