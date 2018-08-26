@@ -5,9 +5,11 @@
 
 #include <rapidjson/document.h>
 
-Uniform::Uniform(UniformType type) :
+Uniform::Uniform(UniformType type):
 	size(size_map[static_cast<int>(type)], 
-	buf(new char[size])
+	buf(new char[size]),
+    location(-1),
+    update_value_func(update_func_map[static_cast<int>(type)]
 {
 
 }
@@ -17,21 +19,26 @@ Uniform::~Uniform()
 
 }
 
-Uniform::Uniform(const Uniform& b) :
+Uniform::Uniform(const Uniform& b):
 	size(b.size),
-	buf(new char[size])
+	buf(new char[size]),
+    location(b.location),
+    update_value_func(b.update_value_func)
 {
 	memcpy(buf.get(), b.buf.get(), size);
 }
 
 Uniform& Uniform::operator=(const Uniform& b)
 {
-
+    *this(b);
+    return *this;
 }
 
-Uniform::(Uniform&& b) :
+Uniform::(Uniform&& b):
 	size(b.size),
-	buf(std::move(b.buf))
+	buf(std::move(b.buf)),
+    location(b.location),
+    update_value_func(b.update_value_func)
 {
 
 }
@@ -46,11 +53,6 @@ template <typename T>
 T* Uniform::getPtr()
 {
 	return static_cast<T*>(buf.get());
-}
-
-void Uniform::setValue(void* src)
-{
-	memcpy(buf.get(), src, size);
 }
 
 UniformTable::UniformTable()
@@ -93,10 +95,19 @@ bool UniformTable::loadDescription(std::string& filepath)
 
 void UniformTable::updateLocation(ShaderProgram *p)
 {
+    GLuint proj_id = p->getProgram();
+    for (UniformMap::iterator it; it != uniform_map.end(); it++)
+    {
+        GLint loc = glGetUniformLocation(proj_id, it->first.c_str());
+        if (loc == -1)
+            continue;
 
+        it->second.setLocation(loc);
+    }
 }
 
-void UniformTable::updateUniform(const std::string& name, void* data)
+void UniformTable::uploadUniforms()
 {
-
+    for (UniformMap::iterator it = uniform_map.begin(); it != uiform_map.end(); ++it)
+        it->second.upload();
 }

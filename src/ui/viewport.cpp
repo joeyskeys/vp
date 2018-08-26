@@ -43,6 +43,7 @@ QtViewport::~QtViewport()
     makeCurrent();
 
     delete m_program;
+    delete m_global_uniforms;
 	delete m_camera;
 
 	clearGL();
@@ -69,10 +70,13 @@ void QtViewport::initializeGL()
     m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic");
 	m_prog = m_program->getProgram();
 
+    /*
 	m_proj_loc = glGetUniformLocation(m_prog, "proj");
 	m_view_loc = glGetUniformLocation(m_prog, "view");
 	m_light_position_loc = glGetUniformLocation(m_prog, "light.position");
 	m_light_color_loc = glGetUniformLocation(m_prog, "light.color");
+    */
+    m_global_uniforms->updateLocation(m_program);
 
 	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
