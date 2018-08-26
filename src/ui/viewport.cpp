@@ -1,6 +1,7 @@
 #include "viewport.h"
 
 #include <io/obj_loader.h>
+#include <model/uniform_table.h>
 
 #include <QOpenGLShaderProgram>
 #include <QKeyEvent>
@@ -31,6 +32,7 @@ QtViewport::QtViewport(QWidget *parent) :
 	m_light.setPosition(glm::vec3(0.0f, 0.0f, -0.8f));
 	m_light.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 	m_program = new ShaderProgram;
+    m_global_uniforms = new UniformTable();
 	m_camera = new Camera;
 	QPoint p = mapFromGlobal(QCursor::pos());
 	m_mouse_pos = glm::vec2(p.x(), p.y());
@@ -63,7 +65,7 @@ void QtViewport::initializeGL()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	
 	//m_program->load("E:/work/repos/vp/src/shaders/", "basic");
-	//m_program->load("G:/WorkSpace/repos/vp/src/shaders/", "basic");
+    m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
     m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic");
 	m_prog = m_program->getProgram();
 

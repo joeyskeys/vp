@@ -42,6 +42,7 @@ protected:
 private:
 	GLuint		m_prog;
 	ShaderProgram *m_program;
+    UniformTable *m_global_uniforms;
 	Camera		*m_camera;
 
 	GLuint		m_vbo1, m_vbo2, m_vbo_idx;

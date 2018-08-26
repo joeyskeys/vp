@@ -130,7 +130,6 @@ bool ShaderProgram::load(const string& p, const string& n)
         GLint logsize;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logsize);
         buf = (char*)malloc(logsize);
-        //cerr << buf << endl;
 		cout << buf << endl;
         free(buf);
         glDeleteProgram(program);

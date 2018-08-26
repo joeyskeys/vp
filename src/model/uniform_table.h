@@ -18,6 +18,7 @@ enum class UniformType
 const static int size_map[] = {4, 4, 8, 12, 16, 36, 48};
 
 class Uniform;
+class ShaderProgram;
 
 using std::pair<int, void*> = UniformPair;
 using std::map<std::string, Uniform> = UniformMap;
@@ -52,7 +53,9 @@ public:
 	UniformTable(UniformTable&& b);
 	UniformTable& operator=(UniformTable&& b);
 
-	bool loadDescription(std::string& filepath)
+	bool loadDescription(std::string& filepath);
+    void updateLocation(ShaderProgram *p);
+    void updateUniform(const std::string& name, void* data);
 
 private:
 	UniformMap uniform_map;

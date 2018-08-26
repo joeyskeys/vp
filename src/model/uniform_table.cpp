@@ -90,3 +90,13 @@ bool UniformTable::loadDescription(std::string& filepath)
 
 	return true;
 }
+
+void UniformTable::updateLocation(ShaderProgram *p)
+{
+
+}
+
+void UniformTable::updateUniform(const std::string& name, void* data)
+{
+
+}
