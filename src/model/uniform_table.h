@@ -74,6 +74,7 @@ public:
 
 	bool loadDescription(std::string& filepath);
     void updateLocation(ShaderProgram *p);
+	void updateUniform(std::string& name, void* data);
     void uploadUniforms();
 
 private:

@@ -106,13 +106,19 @@ void QtViewport::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(m_prog);
+	//glUseProgram(m_prog);
+	m_program->use();
 
 	m_proj_val = glm::perspective(1.047f, 4.f / 3.f, 1.f, 100.f);
-	glUniformMatrix4fv(m_proj_loc, 1, GL_FALSE, glm::value_ptr(m_proj_val));
+	//glUniformMatrix4fv(m_proj_loc, 1, GL_FALSE, glm::value_ptr(m_proj_val));
+	m_global_uniforms->updateUniform("proj", glm::value_ptr(m_proj_val));
+
 	//m_view_val = glm::mat4(1.f);
 	//glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, glm::value_ptr(m_view_val));
-	glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, m_camera->getViewMatrixPtr());
+
+	m_global_uniforms->uploadUniforms();
+	
+	//glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, m_camera->getViewMatrixPtr());
 	glUniform3fv(m_light_position_loc, 1, (GLfloat*)m_light.getData());
 
     glEnableVertexAttribArray(0);

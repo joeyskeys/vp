@@ -106,6 +106,13 @@ void UniformTable::updateLocation(ShaderProgram *p)
     }
 }
 
+void UniformTable::updateUniform(std::string& name, void* data)
+{
+	UniformMap::iterator it = uniform_map.find(name);
+	if (it != uniform_map.end())
+		it->second.setValue(data);
+}
+
 void UniformTable::uploadUniforms()
 {
     for (UniformMap::iterator it = uniform_map.begin(); it != uiform_map.end(); ++it)
