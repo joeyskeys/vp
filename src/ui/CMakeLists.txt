@@ -1,7 +1,7 @@
 add_library(viewport STATIC
-	viewport.h
+    viewport.h
     viewport.cpp
-	)
+)
 
 if (WIN32)
 	set(PLATFORM_SPEC_LIBS

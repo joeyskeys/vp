@@ -1,16 +1,16 @@
 add_executable(mainwin
     main.cpp
-	)
+)
 
 target_link_libraries(mainwin
-	general
-		viewport
+    general
+        viewport
         model
         io
-	    Qt5::Widgets
-	    Qt5::Core
-	    Qt5::Gui
-	)
+        Qt5::Widgets
+        Qt5::Core
+        Qt5::Gui
+)
 
 if (${CMAKE_BUILD_TYPE} STREQUAL "Debug")
 	install (FILES

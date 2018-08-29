@@ -2,31 +2,31 @@
 
 size_t getFileSize(std::ifstream& f)
 {
-	f.seekg(0, std::ios::beg);
+    f.seekg(0, std::ios::beg);
     std::streampos pos = f.tellg();
-	f.seekg(0, std::ios::end);
-	size_t size = f.tellg() - pos;
-	f.seekg(0, std::ios::beg);
-    return size + 1;
+    f.seekg(0, std::ios::end);
+    size_t size = f.tellg() - pos;
+    f.seekg(0, std::ios::beg);
+    return size;
 }
 
 AutoBuffer readAll(const std::string& filepath)
 {
     std::ifstream f(filepath, std::ios::in | std::ios::binary);
-	if (!f.good())
-		return nullptr;
+    if (!f.good())
+        return nullptr;
 
     AutoBuffer buf;
     buf = readAll(f);
-	f.close();
+    f.close();
 
-	return buf;
+    return buf;
 }
 
 AutoBuffer readAll(std::ifstream& f)
 {
     size_t size = getFileSize(f);
-    AutoBuffer buf{new char[size]};
+    AutoBuffer buf{new char[size + 1]};
     f.read(buf.get(), size);
     char *buf_ptr = buf.get();
     buf_ptr[size] = 0;

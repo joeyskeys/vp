@@ -1,6 +1,7 @@
 #include "uniform_table.h"
 #include "shader.h"
 
+#include <iostream>
 #include <cstring>
 #include <utility>
 
@@ -87,6 +88,7 @@ UniformTable& UniformTable::operator=(UniformTable&& b)
 bool UniformTable::loadDescription(const std::string& filepath)
 {
     AutoBuffer buf = readAll(filepath);
+    std::cout << "buf size " <<  strlen(buf.get()) << std::endl;
     rapidjson::Document doc;
     doc.Parse(buf.get());
     if (doc.HasParseError())
@@ -103,8 +105,9 @@ bool UniformTable::loadDescription(const std::string& filepath)
 void UniformTable::updateLocation(const ShaderProgram *p)
 {
     GLuint proj_id = p->getProgram();
-    for (UniformMap::iterator it; it != uniform_map.end(); it++)
+    for (UniformMap::iterator it = uniform_map.begin(); it != uniform_map.end(); ++it)
     {
+	std::cout << "uniform " << it->first << std::endl;
         GLint loc = glGetUniformLocation(proj_id, it->first.c_str());
         if (loc == -1)
             continue;

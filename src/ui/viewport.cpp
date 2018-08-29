@@ -21,7 +21,7 @@ QtViewport::QtViewport(QWidget *parent) :
 {
     //m_mesh.fillTriangle();
     m_mesh.fillCube();
-    m_mesh.updateExpandedMesh();
+    //m_mesh.updateExpandedMesh();
     //ObjLoader loader;
     //loader.load("/mnt/media/workspace/repos/self/vp/src/asset/cube.obj");
     //loader.fillMesh(&m_mesh);
@@ -66,8 +66,10 @@ void QtViewport::initializeGL()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	
 	//m_program->load("E:/work/repos/vp/src/shaders/", "basic");
-    m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
-    m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic");
+    //m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
+    m_global_uniforms->loadDescription("/home/chenmiwei/Work/source/vp/src/shaders/global_uniforms.json");
+    //m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic");
+    m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "basic");
 	m_prog = m_program->getProgram();
 
     /*
@@ -110,15 +112,15 @@ void QtViewport::paintGL()
 	m_program->use();
 
 	m_proj_val = glm::perspective(1.047f, 4.f / 3.f, 1.f, 100.f);
-	//glUniformMatrix4fv(m_proj_loc, 1, GL_FALSE, glm::value_ptr(m_proj_val));
+	glUniformMatrix4fv(m_proj_loc, 1, GL_FALSE, glm::value_ptr(m_proj_val));
 	m_global_uniforms->updateUniform("proj", glm::value_ptr(m_proj_val));
 
 	//m_view_val = glm::mat4(1.f);
 	//glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, glm::value_ptr(m_view_val));
 
-	m_global_uniforms->uploadUniforms();
+	//m_global_uniforms->uploadUniforms();
 	
-	//glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, m_camera->getViewMatrixPtr());
+	glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, m_camera->getViewMatrixPtr());
 	glUniform3fv(m_light_position_loc, 1, (GLfloat*)m_light.getData());
 
     glEnableVertexAttribArray(0);
