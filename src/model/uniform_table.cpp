@@ -1,4 +1,5 @@
 #include "uniform_table.h"
+#include "shader.h"
 
 #include <cstring>
 #include <utility>
@@ -6,10 +7,10 @@
 #include <rapidjson/document.h>
 
 Uniform::Uniform(UniformType type):
-	size(size_map[static_cast<int>(type)], 
-	buf(new char[size]),
+    size(size_map[static_cast<int>(type)]), 
+    buf(new char[size]),
     location(-1),
-    update_value_func(update_func_map[static_cast<int>(type)]
+    update_value_func(update_func_map[static_cast<int>(type)])
 {
 
 }
@@ -20,39 +21,45 @@ Uniform::~Uniform()
 }
 
 Uniform::Uniform(const Uniform& b):
-	size(b.size),
-	buf(new char[size]),
+    size(b.size),
+    buf(new char[size]),
     location(b.location),
     update_value_func(b.update_value_func)
 {
-	memcpy(buf.get(), b.buf.get(), size);
+    memcpy(buf.get(), b.buf.get(), size);
 }
 
 Uniform& Uniform::operator=(const Uniform& b)
 {
-    *this(b);
+    size = b.size;
+    buf = AutoBuffer(new char[size]);
+    location = b.location;
+    update_value_func = b.update_value_func;
     return *this;
 }
 
-Uniform::(Uniform&& b):
-	size(b.size),
-	buf(std::move(b.buf)),
+Uniform::Uniform(Uniform&& b):
+    size(b.size),
+    buf(std::move(b.buf)),
     location(b.location),
     update_value_func(b.update_value_func)
 {
 
 }
 
-Uniform& operator=(Uniform&& b)
+Uniform& Uniform::operator=(Uniform&& b)
 {
-	*this(b);
-	return *this;
+    size = b.size;
+    buf = std::move(b.buf);
+    location = b.location;
+    update_value_func = b.update_value_func;
+    return *this;
 }
 
 template <typename T>
 T* Uniform::getPtr()
 {
-	return static_cast<T*>(buf.get());
+    return static_cast<T*>(buf.get());
 }
 
 UniformTable::UniformTable()
@@ -66,34 +73,34 @@ UniformTable::~UniformTable()
 }
 
 UniformTable::UniformTable(UniformTable&& b):
-	uniform_map(b.uniform_map)
+    uniform_map(b.uniform_map)
 {
 
 }
 
 UniformTable& UniformTable::operator=(UniformTable&& b)
 {
-	*this(b);
-	return *this;
+    uniform_map = std::move(b.uniform_map);
+    return *this;
 }
 
-bool UniformTable::loadDescription(std::string& filepath)
+bool UniformTable::loadDescription(const std::string& filepath)
 {
-	AutoBuffer buf = readAll(filepath);
-	rapidjson::Document doc;
-	doc.Parse(buf.get());
-	if (doc.HasParseError())
-		return false;
+    AutoBuffer buf = readAll(filepath);
+    rapidjson::Document doc;
+    doc.Parse(buf.get());
+    if (doc.HasParseError())
+        return false;
 
-	for (rapidjson::Value::ConstMemberIterator it = doc.MemberBegin(); it != doc.MemberEnd(); ++it)
-	{
-		uniform_map[it->name.GetString()] = Uniform(static_cast<UniformType>(it->value.GetInt()));
-	}
+    for (rapidjson::Value::ConstMemberIterator it = doc.MemberBegin(); it != doc.MemberEnd(); ++it)
+    {
+        uniform_map.emplace(it->name.GetString(), Uniform(static_cast<UniformType>(it->value.GetInt())));
+    }
 
-	return true;
+    return true;
 }
 
-void UniformTable::updateLocation(ShaderProgram *p)
+void UniformTable::updateLocation(const ShaderProgram *p)
 {
     GLuint proj_id = p->getProgram();
     for (UniformMap::iterator it; it != uniform_map.end(); it++)
@@ -106,15 +113,15 @@ void UniformTable::updateLocation(ShaderProgram *p)
     }
 }
 
-void UniformTable::updateUniform(std::string& name, void* data)
+void UniformTable::updateUniform(const std::string& name, const void* data)
 {
-	UniformMap::iterator it = uniform_map.find(name);
-	if (it != uniform_map.end())
-		it->second.setValue(data);
+    UniformMap::iterator it = uniform_map.find(name);
+    if (it != uniform_map.end())
+        it->second.setValue(data);
 }
 
 void UniformTable::uploadUniforms()
 {
-    for (UniformMap::iterator it = uniform_map.begin(); it != uiform_map.end(); ++it)
+    for (UniformMap::iterator it = uniform_map.begin(); it != uniform_map.end(); ++it)
         it->second.upload();
 }

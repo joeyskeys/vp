@@ -1,4 +1,6 @@
 #include "shader.h"
+#include "utils.h"
+#include "uniform_table.h"
 
 #include <iostream>
 #include <fstream>
@@ -39,6 +41,7 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& rhs)
 	return *this;
 }
 
+/*
 static size_t getFileSize(ifstream& f)
 {
     f.seekg(0, ios::beg);
@@ -48,6 +51,7 @@ static size_t getFileSize(ifstream& f)
 	f.seekg(0, ios::beg);
     return size;
 }
+*/
 
 static GLuint loadShader(GLenum type, char *buf, GLint size)
 {

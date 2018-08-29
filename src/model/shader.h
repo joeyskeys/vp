@@ -1,12 +1,14 @@
 #include "cache.h"
 #include "manager.h"
-#include "uniformtable.h"
+#include "uniform_table.h"
 
 #include <GL/glew.h>
 
 #include <string.h>
 
 using namespace std;
+
+//class UniformTable;
 
 typedef struct ShaderProgramObj
 {
@@ -18,14 +20,14 @@ class ShaderProgram
 {
 public:
     ShaderProgram();
-	~ShaderProgram();
+    ~ShaderProgram();
     ShaderProgram(const ShaderProgram& rhs) = delete;
     ShaderProgram& operator=(const ShaderProgram& rhs) = delete;
-	ShaderProgram(ShaderProgram&& rhs);
-	ShaderProgram& operator=(ShaderProgram&& rhs);
+    ShaderProgram(ShaderProgram&& rhs);
+    ShaderProgram& operator=(ShaderProgram&& rhs);
 
     inline bool isInitailized() const { return !program; }
-    bool		load(const string& p, const string& n);
+    bool	load(const string& p, const string& n);
     inline void use() const { glUseProgram(program); }
 
     inline GLuint   getProgram() const { return program; }

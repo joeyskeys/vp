@@ -122,7 +122,7 @@ void Camera::rotateAroundPivot(const float x, const float y)
 	glm::mat4 xform = glm::rotate(glm::mat4(1.f), -rx, up);
 	glm::vec3 right = glm::normalize(glm::cross(rev_dir, up));
 	xform = glm::rotate(xform, ry, right);
-	c->eye = glm::vec4(c->lookat, 1.f) + xform * glm::vec4(rev_dir, 0.f);
+	c->eye = glm::vec3(glm::vec4(c->lookat, 1.f) + xform * glm::vec4(rev_dir, 0.f));
 	view = glm::lookAt(c->eye, c->lookat, up);
 }
 

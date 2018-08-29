@@ -10,7 +10,7 @@ size_t getFileSize(std::ifstream& f)
     return size + 1;
 }
 
-AutoBuffer readAll(std::string& filepath)
+AutoBuffer readAll(const std::string& filepath)
 {
     std::ifstream f(filepath, std::ios::in | std::ios::binary);
 	if (!f.good())
