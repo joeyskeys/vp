@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 #include <cstring>
+#include <iostream>
 
 enum class UniformType
 {
@@ -19,7 +20,7 @@ enum class UniformType
     MAT4
 };
 
-const static int size_map[] = {4, 4, 8, 12, 16, 36, 48};
+const static int size_map[] = {4, 4, 8, 12, 16, 36, 64};
 
 class Uniform;
 class ShaderProgram;
@@ -29,13 +30,13 @@ using UniformMap = std::map<std::string, Uniform>;
 using UpdateFunction = void (*)(int, void*);
 
 const static UpdateFunction update_func_map[] = {
-    [](int loc, void* data) { glUniform1iv(loc, 1, static_cast<GLint*>(data)); },
-    [](int loc, void* data) { glUniform1fv(loc, 1, static_cast<GLfloat*>(data)); },
-    [](int loc, void* data) { glUniform2fv(loc, 1, static_cast<GLfloat*>(data)); },
-    [](int loc, void* data) { glUniform3fv(loc, 1, static_cast<GLfloat*>(data)); },
-    [](int loc, void* data) { glUniform4fv(loc, 1, static_cast<GLfloat*>(data)); },
-    [](int loc, void* data) { glUniformMatrix3fv(loc, 1, GL_FALSE, static_cast<GLfloat*>(data)); },
-    [](int loc, void* data) { glUniformMatrix4fv(loc, 1, GL_FALSE, static_cast<GLfloat*>(data)); }
+    [](int loc, void* data) { glUniform1iv(loc, 1, (GLint*)(data)); },
+    [](int loc, void* data) { glUniform1fv(loc, 1, (GLfloat*)(data)); },
+    [](int loc, void* data) { glUniform2fv(loc, 1, (GLfloat*)(data)); },
+    [](int loc, void* data) { glUniform3fv(loc, 1, (GLfloat*)(data)); },
+    [](int loc, void* data) { glUniform4fv(loc, 1, (GLfloat*)(data)); },
+    [](int loc, void* data) { glUniformMatrix3fv(loc, 1, GL_FALSE, (GLfloat*)(data)); },
+    [](int loc, void* data) { glUniformMatrix4fv(loc, 1, GL_FALSE, (GLfloat*)(data)); }
 };
 
 class Uniform
@@ -56,7 +57,7 @@ public:
     inline void setLocation(GLint loc) { location = loc; }
     inline void upload() { update_value_func(location, buf.get()); }
 
-private:
+//private:
     size_t  size;
     AutoBuffer buf;
     GLint   location;
@@ -78,6 +79,6 @@ public:
     void updateUniform(const std::string& name, const void* data);
     void uploadUniforms();
 
-private:
+//private:
     UniformMap uniform_map;
 };

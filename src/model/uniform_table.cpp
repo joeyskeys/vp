@@ -107,12 +107,13 @@ void UniformTable::updateLocation(const ShaderProgram *p)
     GLuint proj_id = p->getProgram();
     for (UniformMap::iterator it = uniform_map.begin(); it != uniform_map.end(); ++it)
     {
-	std::cout << "uniform " << it->first << std::endl;
+	    std::cout << "uniform " << it->first << std::endl;
         GLint loc = glGetUniformLocation(proj_id, it->first.c_str());
         if (loc == -1)
             continue;
 
         it->second.setLocation(loc);
+        std::cout << "location " << loc << std::endl;
     }
 }
 
@@ -120,7 +121,10 @@ void UniformTable::updateUniform(const std::string& name, const void* data)
 {
     UniformMap::iterator it = uniform_map.find(name);
     if (it != uniform_map.end())
+    {
+        std::cout << "updating values for " << it->first << std::endl;
         it->second.setValue(data);
+    }
 }
 
 void UniformTable::uploadUniforms()

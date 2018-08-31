@@ -11,7 +11,6 @@
 
 #include <cstring>
 #include <stdexcept>
-#include <iostream>
 
 QtViewport::QtViewport(QWidget *parent) :
 	QOpenGLWidget(parent),
@@ -72,12 +71,11 @@ void QtViewport::initializeGL()
     m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "basic");
 	m_prog = m_program->getProgram();
 
-    /*
 	m_proj_loc = glGetUniformLocation(m_prog, "proj");
 	m_view_loc = glGetUniformLocation(m_prog, "view");
 	m_light_position_loc = glGetUniformLocation(m_prog, "light.position");
 	m_light_color_loc = glGetUniformLocation(m_prog, "light.color");
-    */
+    
     m_global_uniforms->updateLocation(m_program);
 
 	glGenVertexArrays(1, &m_vao);
@@ -113,15 +111,13 @@ void QtViewport::paintGL()
 
 	m_proj_val = glm::perspective(1.047f, 4.f / 3.f, 1.f, 100.f);
 	glUniformMatrix4fv(m_proj_loc, 1, GL_FALSE, glm::value_ptr(m_proj_val));
+
+	//glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, m_camera->getViewMatrixPtr());
+	//glUniform3fv(m_light_position_loc, 1, (GLfloat*)m_light.getData());
+
 	m_global_uniforms->updateUniform("proj", glm::value_ptr(m_proj_val));
-
-	//m_view_val = glm::mat4(1.f);
-	//glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, glm::value_ptr(m_view_val));
-
-	//m_global_uniforms->uploadUniforms();
-	
-	glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, m_camera->getViewMatrixPtr());
-	glUniform3fv(m_light_position_loc, 1, (GLfloat*)m_light.getData());
+    m_global_uniforms->updateUniform("view", m_camera->getViewMatrixPtr());
+    m_global_uniforms->uploadUniforms();
 
     glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo1);
