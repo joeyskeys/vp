@@ -6,8 +6,7 @@
 
 #include <QOpenGLShaderProgram>
 #include <map>
-
-using namespace std;
+#include <vector>
 
 class ShaderManager
 {
@@ -25,6 +24,6 @@ public:
     ShaderProgram* getShader(const string& name);
 
 private:
-    map<string,ShaderProgram> shader_map;
-	vector<string> search_paths;
+    std::map<string,ShaderProgram> shader_map;
+    std::vector<string> search_paths;
 };

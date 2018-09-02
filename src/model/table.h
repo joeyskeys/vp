@@ -28,6 +28,7 @@ class ShaderProgram;
 using UniformPair = std::pair<int, void*>;
 using UniformMap = std::map<std::string, Uniform>;
 using UpdateFunction = void (*)(int, void*);
+using AttribMap = std::map<int, int>;
 
 const static UpdateFunction update_func_map[] = {
     [](int loc, void* data) { glUniform1iv(loc, 1, (GLint*)(data)); },
@@ -57,22 +58,22 @@ public:
     inline void setLocation(GLint loc) { location = loc; }
     inline void upload() { update_value_func(location, buf.get()); }
 
-//private:
+private:
     size_t  size;
     AutoBuffer buf;
     GLint   location;
     UpdateFunction update_value_func;
 };
 
-class UniformTable
+class UniformTable: public UniformMap
 {
 public:
     UniformTable();
-    ~UniformTable();
+    virtual ~UniformTable();
     UniformTable(const UniformTable& b) = delete;
     UniformTable& operator=(const UniformTable& b) = delete;
-    UniformTable(UniformTable&& b);
-    UniformTable& operator=(UniformTable&& b);
+    //UniformTable(UniformTable&& b);
+    //UniformTable& operator=(UniformTable&& b);
 
     bool loadDescription(const std::string& filepath);
     void updateLocation(const ShaderProgram *p);
@@ -80,5 +81,22 @@ public:
     void uploadUniforms();
 
 //private:
-    UniformMap uniform_map;
+//    UniformMap uniform_map;
+};
+
+
+class AttribTable: public AttribMap
+{
+public:
+    AttribTable();
+    virtual ~AttribTable();
+    AttribTable(const AttribTable& b) = delete;
+    AttribTable& operator=(const AttribTable& b) = delete;
+    //AttribTable(AttribTable&& b);
+    //AttribTable& operator=(AttribTable&& b);
+
+    bool loadDescription(rapidjson::Value& v);
+
+//private:
+//    AttribMap attrib_map;
 };

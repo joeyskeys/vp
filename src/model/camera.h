@@ -1,3 +1,5 @@
+#pragma once
+
 #include "manager.h"
 
 #include <glm/glm.hpp>

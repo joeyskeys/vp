@@ -63,7 +63,8 @@ T* Uniform::getPtr()
     return static_cast<T*>(buf.get());
 }
 
-UniformTable::UniformTable()
+UniformTable::UniformTable():
+    UniformMap()
 {
 
 }
@@ -73,6 +74,7 @@ UniformTable::~UniformTable()
 
 }
 
+/*
 UniformTable::UniformTable(UniformTable&& b):
     uniform_map(b.uniform_map)
 {
@@ -84,11 +86,11 @@ UniformTable& UniformTable::operator=(UniformTable&& b)
     uniform_map = std::move(b.uniform_map);
     return *this;
 }
+*/
 
 bool UniformTable::loadDescription(const std::string& filepath)
 {
     AutoBuffer buf = readAll(filepath);
-    std::cout << "buf size " <<  strlen(buf.get()) << std::endl;
     rapidjson::Document doc;
     doc.Parse(buf.get());
     if (doc.HasParseError())
@@ -96,7 +98,7 @@ bool UniformTable::loadDescription(const std::string& filepath)
 
     for (rapidjson::Value::ConstMemberIterator it = doc.MemberBegin(); it != doc.MemberEnd(); ++it)
     {
-        uniform_map.emplace(it->name.GetString(), Uniform(static_cast<UniformType>(it->value.GetInt())));
+        this->emplace(it->name.GetString(), Uniform(static_cast<UniformType>(it->value.GetInt())));
     }
 
     return true;
@@ -105,30 +107,43 @@ bool UniformTable::loadDescription(const std::string& filepath)
 void UniformTable::updateLocation(const ShaderProgram *p)
 {
     GLuint proj_id = p->getProgram();
-    for (UniformMap::iterator it = uniform_map.begin(); it != uniform_map.end(); ++it)
+    for (UniformMap::iterator it = this->begin(); it != this->end(); ++it)
     {
-	    std::cout << "uniform " << it->first << std::endl;
         GLint loc = glGetUniformLocation(proj_id, it->first.c_str());
         if (loc == -1)
             continue;
 
         it->second.setLocation(loc);
-        std::cout << "location " << loc << std::endl;
     }
 }
 
 void UniformTable::updateUniform(const std::string& name, const void* data)
 {
-    UniformMap::iterator it = uniform_map.find(name);
-    if (it != uniform_map.end())
+    UniformMap::iterator it = this->find(name);
+    if (it != this->end())
     {
-        std::cout << "updating values for " << it->first << std::endl;
         it->second.setValue(data);
     }
 }
 
 void UniformTable::uploadUniforms()
 {
-    for (UniformMap::iterator it = uniform_map.begin(); it != uniform_map.end(); ++it)
+    for (UniformMap::iterator it = this->begin(); it != this->end(); ++it)
         it->second.upload();
+}
+
+AttribTable::AttribTable():
+    AttribMap()
+{
+
+}
+
+AttribTable::~AttribTable()
+{
+
+}
+
+bool AttribTable::loadDescription(rapidjson::Value& v)
+{
+
 }

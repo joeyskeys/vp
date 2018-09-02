@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdio>
+#include <cstdlib>
 #include <vector>
 
 ShaderProgramManager* ShaderProgram::mgr = ShaderProgramManager::getInstance();
@@ -68,7 +69,7 @@ static GLuint loadShader(GLenum type, char *buf, GLint size)
         log = (char*)malloc(logsize);
         glGetShaderInfoLog(shader, logsize, &logsize, log);
         //cerr << log << endl;
-		cout << log << endl;
+        std::cout << log << endl;
         free(log);
         glDeleteShader(shader);
         return 0;
@@ -77,15 +78,15 @@ static GLuint loadShader(GLenum type, char *buf, GLint size)
     return shader;
 }
 
-bool ShaderProgram::load(const string& p, const string& n)
+bool ShaderProgram::load(const std::string& p, const std::string& n)
 {
-    string vpath = p + n + ".vert";
-    ifstream vf(vpath, ios::in | ios::binary);
+    std::string vpath = p + n + ".vert";
+    ifstream vf(vpath, std::ios::in | std::ios::binary);
     if (!vf.good())
         return false;
 
     string fpath = p + n + ".frag";
-    ifstream ff(fpath, ios::in | ios::binary);
+    ifstream ff(fpath, std::ios::in | std::ios::binary);
     if (!ff.good())
         return false;
         

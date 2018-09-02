@@ -7,6 +7,7 @@ typedef struct MeshObj
 {
 	Cachef verts;
 	Cachef norms;
+    Cachef cols;
 	Cacheu idx;
 } MeshObj;
 
@@ -28,15 +29,21 @@ public:
 	inline float*		getVertAt(int i) const { return m->verts.data + 3 * i; }
 	inline float*		getNorms() const { return m->norms.data; }
 	inline float*		getNormAt(int i) const { return m->norms.data + 3 * i; }
-	inline unsigned int*	getIdx() const { return m->idx.data; }
+	inline unsigned int*    getIdx() const { return m->idx.data; }
 	inline unsigned int*	getIdxAt(int i) const { return m->idx.data + 3 * i; }
-	inline const int 	getVertCount() const { return vert_cnt; }
-	inline const int 	getNormCount() const { return norm_cnt; }
-    inline const int    getIdxCount() const { return idx_cnt; }
-	inline const int	getTriCount() const { return tri_cnt; }
-	inline const size_t	getVertSize() const { return vert_cnt * sizeof(float) * 3; }
-	inline const size_t getNormSize() const { return norm_cnt * sizeof(float) * 3; }
-	inline const size_t getIdxSize() const	{ return idx_cnt * sizeof(int) * 3; }
+	inline int 	        getVertCount() const { return vert_cnt; }
+	inline int 	        getNormCount() const { return norm_cnt; }
+    inline int          getIdxCount() const { return idx_cnt; }
+	inline int	        getTriCount() const { return tri_cnt; }
+	inline size_t	    getVertSize() const { return vert_cnt * sizeof(float) * 3; }
+	inline size_t       getNormSize() const { return norm_cnt * sizeof(float) * 3; }
+	inline size_t       getIdxSize() const	{ return idx_cnt * sizeof(int) * 3; }
+    inline Cachef&      getVertCache() const { return m->verts; }
+    inline Cachef&      getExpandedVertCache() { return expanded_verts; }
+    inline Cachef&      getNormCache() const { return m->norms; }
+    inline Cachef&      getExpandedNormCache() { return expanded_norms; }
+    inline Cachef&      getColCache() const { return m->cols; }
+    inline Cacheu&      getIdxCache() const { return m->idx; }
 
 	void				insertVert(float *v);
 	void				insertVerts(float *v, int cnt);

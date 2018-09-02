@@ -17,7 +17,5 @@ int main()
     int a = 2;
     u.setValue(&a);
 
-    std::cout << *(int*)(u.buf.get()) << std::endl;
-
     return 0;
 }

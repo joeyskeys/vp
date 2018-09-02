@@ -1,3 +1,5 @@
+#pragma once
+
 #include "cache.h"
 #include "manager.h"
 #include "uniform_table.h"
@@ -5,8 +7,6 @@
 #include <GL/glew.h>
 
 #include <string.h>
-
-using namespace std;
 
 //class UniformTable;
 

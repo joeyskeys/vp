@@ -52,6 +52,7 @@ QtViewport::~QtViewport()
 
 void QtViewport::initializeGL()
 {
+    std::cout << "init glew" << std::endl;
 	if (glewInit() != GLEW_OK)
     {
         std::logic_error ex("Failed to initialize GLEW\n");
@@ -65,10 +66,10 @@ void QtViewport::initializeGL()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	
 	//m_program->load("E:/work/repos/vp/src/shaders/", "basic");
-    //m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
-    m_global_uniforms->loadDescription("/home/chenmiwei/Work/source/vp/src/shaders/global_uniforms.json");
-    //m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic");
-    m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "basic");
+    m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
+    //m_global_uniforms->loadDescription("/home/chenmiwei/Work/source/vp/src/shaders/global_uniforms.json");
+    m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic");
+    //m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "basic");
 	m_prog = m_program->getProgram();
 
 	m_proj_loc = glGetUniformLocation(m_prog, "proj");
