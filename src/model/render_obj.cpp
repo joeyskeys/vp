@@ -1,14 +1,17 @@
 #include "render_obj.h"
 #include <model/mesh.h>
 #include <model/table.h>
+#include <model/shader.h>
 
 #include <cstring>
+#include <iostream>
 
 const static char NORMAL =   1;
 const static char COLOR =    2;
 
 static void setFloatData(GLuint buf, Cachef& c)
 {
+    std::cout << "set data : " << c.size << std::endl;
     glBindBuffer(GL_ARRAY_BUFFER, buf);
     glBufferData(GL_ARRAY_BUFFER, c.size, c.data, GL_STATIC_DRAW);
 }
@@ -20,6 +23,7 @@ static void setFloatDummy(GLuint buf, Cachef& c)
 
 static void SetUnsignedData(GLuint buf, Cacheu& c)
 {
+    std::cout << "set idx : " << c.size << std::endl;
     glBindBuffer(GL_ARRAY_BUFFER, buf);
     glBufferData(GL_ARRAY_BUFFER, c.size, c.data, GL_STATIC_DRAW);
 }
@@ -37,6 +41,7 @@ RenderObj::RenderObj():
     shader(nullptr),
     smooth(true),
     vert_comp_size(3),
+    idx_comp_size(3),
     norm_comp_size(3),
     col_comp_size(4),
     idx_cnt(0),
@@ -49,7 +54,7 @@ RenderObj::RenderObj():
     glGenBuffers(4, vbo_list);
 };
 
-RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size):
+RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size, int i_c_size):
     vert_buf(0),
     idx_buf(0),
     norm_buf(0),
@@ -57,6 +62,7 @@ RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size):
     shader(nullptr),
     smooth(true),
     vert_comp_size(v_c_size),
+    idx_comp_size(i_c_size),
     norm_comp_size(n_c_size),
     col_comp_size(c_c_size),
     idx_cnt(0),
@@ -71,6 +77,9 @@ RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size):
         glGenBuffers(1, vbo_list + 2);
     if (c_c_size)
         glGenBuffers(1, vbo_list + 3);
+
+    for (int i = 0; i < 4; i++)
+        std::cout << "buf idx:" << vbo_list[i] << std::endl;
 }
 
 RenderObj::~RenderObj()
@@ -94,15 +103,15 @@ void RenderObj::updateData(Mesh* mesh)
 {
     if (smooth)
     {
-        setVertData(mesh->getExpandedVertCache());
-        setNormData(mesh->getExpandedNormCache());
-    }
-    else
-    {
         setVertData(mesh->getVertCache());
         setNormData(mesh->getNormCache());
         setColData(mesh->getColCache());
         setIdxData(mesh->getIdxCache());
+    }
+    else
+    {
+        setVertData(mesh->getExpandedVertCache());
+        setNormData(mesh->getExpandedNormCache());
     }
 }
 
@@ -114,13 +123,15 @@ void RenderObj::render()
 
     for (AttribTable::iterator it = shader->attrib_table.begin(); it != shader->attrib_table.end(); ++it)
     {
+        std::cout << "handling attribute " << it->first << ", with buf" << vbo_list[it->second] << " comp size : " << comp_size[it->second] << std::endl;
         glEnableVertexAttribArray(it->first);
         glBindBuffer(GL_ARRAY_BUFFER, vbo_list[it->second]);
-        glVertexAttribPointer(0, vert_comp_size, GL_FLOAT, 0, (void*)0);
+        glVertexAttribPointer(0, comp_size[it->second], GL_FLOAT, GL_FALSE, 0, (void*)0);
     }
 
     if (smooth)
     {
+        std::cout << "draw elements :" << idx_cnt << std::endl;
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buf);
         glDrawElements(GL_TRIANGLES, idx_cnt, GL_UNSIGNED_INT, (void*)0);
     }

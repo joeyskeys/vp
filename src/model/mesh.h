@@ -37,7 +37,7 @@ public:
 	inline int	        getTriCount() const { return tri_cnt; }
 	inline size_t	    getVertSize() const { return vert_cnt * sizeof(float) * 3; }
 	inline size_t       getNormSize() const { return norm_cnt * sizeof(float) * 3; }
-	inline size_t       getIdxSize() const	{ return idx_cnt * sizeof(int) * 3; }
+	inline size_t       getIdxSize() const	{ return idx_cnt * sizeof(int); }
     inline Cachef&      getVertCache() const { return m->verts; }
     inline Cachef&      getExpandedVertCache() { return expanded_verts; }
     inline Cachef&      getNormCache() const { return m->norms; }

@@ -2,6 +2,7 @@
 
 #include "utils.h"
 
+#include <rapidjson/document.h>
 #include <GL/glew.h>
 #include <map>
 #include <string>

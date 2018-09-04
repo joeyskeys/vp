@@ -1,7 +1,7 @@
 #include "viewport.h"
 
 #include <io/obj_loader.h>
-#include <model/uniform_table.h>
+#include <model/table.h>
 
 #include <QOpenGLShaderProgram>
 #include <QKeyEvent>
@@ -11,6 +11,7 @@
 
 #include <cstring>
 #include <stdexcept>
+#include <cstdlib>
 
 QtViewport::QtViewport(QWidget *parent) :
 	QOpenGLWidget(parent),
@@ -66,11 +67,18 @@ void QtViewport::initializeGL()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	
 	//m_program->load("E:/work/repos/vp/src/shaders/", "basic");
-    m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
-    //m_global_uniforms->loadDescription("/home/chenmiwei/Work/source/vp/src/shaders/global_uniforms.json");
-    m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic");
-    //m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "basic");
+    //m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
+    m_global_uniforms->loadDescription("/home/chenmiwei/Work/source/vp/src/shaders/global_uniforms.json");
+    //m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic");
+    if (!m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "basic"))
+    {
+        std::cout << "shader init failed" << std::endl;
+        exit(1);
+    }
 	m_prog = m_program->getProgram();
+    m_renderobj = new RenderObj(3, 3, 0, 3);
+    m_renderobj->setShaderProgram(m_program);
+    m_renderobj->updateData(&m_mesh);
 
 	m_proj_loc = glGetUniformLocation(m_prog, "proj");
 	m_view_loc = glGetUniformLocation(m_prog, "view");
@@ -91,6 +99,7 @@ void QtViewport::initializeGL()
     glGenBuffers(1, &m_vbo_idx);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_idx);
     glBufferData(GL_ARRAY_BUFFER, m_mesh.getIdxSize(), m_mesh.getIdx(), GL_STATIC_DRAW);
+    std::cout << "old size\nvert " << m_mesh.getVertSize() << "\nnorm " << m_mesh.getNormSize() << std::endl;
 }
 
 void QtViewport::clearGL()
@@ -120,6 +129,7 @@ void QtViewport::paintGL()
     m_global_uniforms->updateUniform("view", m_camera->getViewMatrixPtr());
     m_global_uniforms->uploadUniforms();
 
+    /*
     glEnableVertexAttribArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo1);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
@@ -131,6 +141,10 @@ void QtViewport::paintGL()
     glDrawElements(GL_TRIANGLES, m_mesh.getIdxSize(), GL_UNSIGNED_INT, (void*)0);
 	glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
+    std::cout << "idx cnt " << m_mesh.getIdxCount() << std::endl;
+    */
+    
+    m_renderobj->render();
 }
 
 void QtViewport::resizeGL(int width, int height)

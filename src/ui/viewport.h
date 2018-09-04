@@ -12,6 +12,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <model/mesh.h>
+#include <model/render_obj.h>
 #include <model/light.h>
 #include <model/shader.h>
 #include <model/camera.h>
@@ -57,6 +58,7 @@ private:
 
     Mesh        m_mesh;
 	Light		m_light;
+    RenderObj   *m_renderobj;
 
 	glm::vec2	m_mouse_pos;
 	bool		m_move_enabled;

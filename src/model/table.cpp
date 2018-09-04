@@ -1,11 +1,10 @@
-#include "uniform_table.h"
+#include "table.h"
 #include "shader.h"
 
 #include <iostream>
+#include <string>
 #include <cstring>
 #include <utility>
-
-#include <rapidjson/document.h>
 
 Uniform::Uniform(UniformType type):
     size(size_map[static_cast<int>(type)]), 
@@ -96,7 +95,7 @@ bool UniformTable::loadDescription(const std::string& path)
     if (doc.HasParseError())
         return false;
 
-    loadDescription(doc);
+    return loadDescription(doc);
 }
 
 bool UniformTable::loadDescription(const rapidjson::Value& v)
@@ -109,8 +108,11 @@ bool UniformTable::loadDescription(const rapidjson::Value& v)
         return false;
     */
 
-    if (!v.isObject())
+    if (!v.IsObject())
+    {
+        std::cout << "load uniforms failed" << std::endl;
         return false;
+    }
 
     for (rapidjson::Value::ConstMemberIterator it = v.MemberBegin(); it != v.MemberEnd(); ++it)
     {
@@ -159,13 +161,21 @@ AttribTable::~AttribTable()
 
 }
 
-bool AttribTable::loadDescription(rapidjson::Value& v)
+bool AttribTable::loadDescription(const rapidjson::Value& v)
 {
-    if (!v.isObject())
+    if (!v.IsObject())
+    {
+        std::cout << "attributes load failed" << std::endl;
         return false;
+    }
 
+    std::cout << "parsing attributes" << std::endl;
     for (rapidjson::Value::ConstMemberIterator it = v.MemberBegin(); it != v.MemberEnd(); ++it)
-        this->emplace(v.name.getInt(), v.value.getInt());
+    {
+        std::cout << it->name.GetString() << " " << it->value.GetInt() << std::endl;
+        this->emplace(std::stoi(it->name.GetString()), it->value.GetInt());
+    }
+    return true;
 }
 
 bool loadDescriptionFile(std::string& path, UniformTable& ut, AttribTable& at)
@@ -174,7 +184,10 @@ bool loadDescriptionFile(std::string& path, UniformTable& ut, AttribTable& at)
     rapidjson::Document doc;
     doc.Parse(buf.get());
     if (doc.HasParseError())
+    {
+        std::cout << "json file:\n" << path << "\n" << "parse error" << std::endl;
         return false;
+    }
 
     if (!ut.loadDescription(doc["uniform"]))
         return false;

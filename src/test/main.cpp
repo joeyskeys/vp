@@ -1,5 +1,6 @@
 #include <io/obj_loader.h>
-#include <model/uniform_table.h>
+#include <model/table.h>
+#include <model/render_obj.h>
 
 #include <iostream>
 
@@ -16,6 +17,8 @@ int main()
     Uniform u(UniformType::INT);
     int a = 2;
     u.setValue(&a);
+
+    RenderObj r;
 
     return 0;
 }

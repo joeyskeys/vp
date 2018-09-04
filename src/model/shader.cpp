@@ -1,6 +1,6 @@
 #include "shader.h"
 #include "utils.h"
-#include "uniform_table.h"
+#include "table.h"
 
 #include <iostream>
 #include <fstream>

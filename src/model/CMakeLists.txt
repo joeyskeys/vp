@@ -9,7 +9,8 @@ set(HEADERS
     shader.h
     material.h
     utils.h
-    uniform_table.h
+    table.h
+    render_obj.h
     )
 
 set(SOURCES
@@ -20,7 +21,8 @@ set(SOURCES
     shader.cpp
     material.cpp
     utils.cpp
-    uniform_table.cpp
+    table.cpp
+    render_obj.cpp
     )
 
 add_library(model STATIC
