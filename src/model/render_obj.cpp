@@ -1,5 +1,6 @@
 #include "render_obj.h"
 #include <model/mesh.h>
+#include <model/table.h>
 
 #include <cstring>
 
@@ -29,7 +30,11 @@ static void setUnsignedDummy(GLuint buf, Cacheu& c)
 }
 
 RenderObj::RenderObj():
-    mesh(nullptr),
+    vert_buf(0),
+    idx_buf(0),
+    norm_buf(0),
+    col_buf(0),
+    shader(nullptr),
     smooth(true),
     vert_comp_size(3),
     norm_comp_size(3),
@@ -45,7 +50,11 @@ RenderObj::RenderObj():
 };
 
 RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size):
-    mesh(nullptr),
+    vert_buf(0),
+    idx_buf(0),
+    norm_buf(0),
+    col_buf(0),
+    shader(nullptr),
     smooth(true),
     vert_comp_size(v_c_size),
     norm_comp_size(n_c_size),
@@ -81,7 +90,7 @@ RenderObj& RenderObj::operator=(RenderObj&& b)
     return *this;
 }
 
-void RenderObj::updateData()
+void RenderObj::updateData(Mesh* mesh)
 {
     if (smooth)
     {
@@ -100,12 +109,16 @@ void RenderObj::updateData()
 void RenderObj::render()
 {
     // todo : put shader related stuff here
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vert_buf);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, norm_buf);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    shader->use();
+    shader->uniform_table.uploadUniforms();
+
+    for (AttribTable::iterator it = shader->attrib_table.begin(); it != shader->attrib_table.end(); ++it)
+    {
+        glEnableVertexAttribArray(it->first);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_list[it->second]);
+        glVertexAttribPointer(0, vert_comp_size, GL_FLOAT, 0, (void*)0);
+    }
+
     if (smooth)
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buf);

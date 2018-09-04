@@ -1,4 +1,12 @@
 {
-    "proj" : 6,
-    "view" : 6
+    "uniform" :
+    {
+        "proj" : 6,
+        "view" : 6
+    },
+    "attribute" :
+    {
+        0 : 0,
+        1 : 2
+    }
 }

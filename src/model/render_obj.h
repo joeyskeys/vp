@@ -8,6 +8,7 @@ using SetFloatDataFunc = void (*)(GLuint, Cachef&);
 using SetUnsignedDataFunc = void (*)(GLuint, Cacheu&);
 
 class Mesh;
+class Shader;
 
 class RenderObj
 {
@@ -20,12 +21,9 @@ public:
     RenderObj(RenderObj&& b);
     RenderObj& operator=(RenderObj&& b);
 
-    inline void toggleSmooth() { smooth = ~smooth; }
-    inline void setMesh(const Mesh* m) {
-        mesh = const_cast<Mesh*>(m);
-        updateData();
-    }
-    void updateData();
+    inline void setSmooth(bool s) { smooth = s; }
+    inline void setShader(Shader* s) { shader = s; }
+    void updateData(Mesh* mesh);
     void render();
 
 private:
@@ -57,7 +55,8 @@ private:
         };
     };
 
-    Mesh *mesh;
+    //Mesh *mesh;
+    Shader *shader;
 
     bool smooth;
     int  vert_comp_size;

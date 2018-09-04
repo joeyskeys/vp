@@ -88,15 +88,31 @@ UniformTable& UniformTable::operator=(UniformTable&& b)
 }
 */
 
-bool UniformTable::loadDescription(const std::string& filepath)
+bool UniformTable::loadDescription(const std::string& path)
 {
-    AutoBuffer buf = readAll(filepath);
+    AutoBuffer buf = readAll(path);
     rapidjson::Document doc;
     doc.Parse(buf.get());
     if (doc.HasParseError())
         return false;
 
-    for (rapidjson::Value::ConstMemberIterator it = doc.MemberBegin(); it != doc.MemberEnd(); ++it)
+    loadDescription(doc);
+}
+
+bool UniformTable::loadDescription(const rapidjson::Value& v)
+{
+    /*
+    AutoBuffer buf = readAll(filepath);
+    rapidjson::Document doc;
+    doc.Parse(buf.get());
+    if (doc.HasParseError())
+        return false;
+    */
+
+    if (!v.isObject())
+        return false;
+
+    for (rapidjson::Value::ConstMemberIterator it = v.MemberBegin(); it != v.MemberEnd(); ++it)
     {
         this->emplace(it->name.GetString(), Uniform(static_cast<UniformType>(it->value.GetInt())));
     }
@@ -145,5 +161,25 @@ AttribTable::~AttribTable()
 
 bool AttribTable::loadDescription(rapidjson::Value& v)
 {
+    if (!v.isObject())
+        return false;
 
+    for (rapidjson::Value::ConstMemberIterator it = v.MemberBegin(); it != v.MemberEnd(); ++it)
+        this->emplace(v.name.getInt(), v.value.getInt());
+}
+
+bool loadDescriptionFile(std::string& path, UniformTable& ut, AttribTable& at)
+{
+    AutoBuffer buf = readAll(path);
+    rapidjson::Document doc;
+    doc.Parse(buf.get());
+    if (doc.HasParseError())
+        return false;
+
+    if (!ut.loadDescription(doc["uniform"]))
+        return false;
+    if (!at.loadDescription(doc["attribute"]))
+        return false;
+
+    return true;
 }

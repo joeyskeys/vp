@@ -2,7 +2,7 @@
 
 #include "cache.h"
 #include "manager.h"
-#include "uniform_table.h"
+#include "table.h"
 
 #include <GL/glew.h>
 
@@ -39,7 +39,10 @@ public:
 private:
     ShaderProgramObj    *s;
     GLuint              program;
+
+public:
     UniformTable        uniform_table;
+    AttribTable         attrib_table;
     
     static ShaderProgramManager *mgr;
 };

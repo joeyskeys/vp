@@ -75,7 +75,8 @@ public:
     //UniformTable(UniformTable&& b);
     //UniformTable& operator=(UniformTable&& b);
 
-    bool loadDescription(const std::string& filepath);
+    bool loadDescription(const std::string& path);
+    bool loadDescription(const rapidjson::Value& v);
     void updateLocation(const ShaderProgram *p);
     void updateUniform(const std::string& name, const void* data);
     void uploadUniforms();
@@ -83,7 +84,6 @@ public:
 //private:
 //    UniformMap uniform_map;
 };
-
 
 class AttribTable: public AttribMap
 {
@@ -95,8 +95,10 @@ public:
     //AttribTable(AttribTable&& b);
     //AttribTable& operator=(AttribTable&& b);
 
-    bool loadDescription(rapidjson::Value& v);
+    bool loadDescription(const rapidjson::Value& v);
 
 //private:
 //    AttribMap attrib_map;
 };
+
+bool loadDescriptionFile(std::string& path, UniformTable& ut, AttribTable& at);

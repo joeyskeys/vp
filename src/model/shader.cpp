@@ -95,7 +95,8 @@ bool ShaderProgram::load(const std::string& p, const std::string& n)
     if (!uf.good())
         return false;
 
-    if (!uniform_table.loadDescription(upath))
+    //if (!uniform_table.loadDescription(upath))
+    if (!loadDescriptionFile(upath, uniform_table, attrib_table))
         return false;
 
     char    *buf;
