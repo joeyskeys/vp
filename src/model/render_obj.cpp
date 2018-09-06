@@ -11,7 +11,6 @@ const static char COLOR =    2;
 
 static void setFloatData(GLuint buf, Cachef& c)
 {
-    std::cout << "set data : " << c.size << std::endl;
     glBindBuffer(GL_ARRAY_BUFFER, buf);
     glBufferData(GL_ARRAY_BUFFER, c.size, c.data, GL_STATIC_DRAW);
 }
@@ -23,7 +22,6 @@ static void setFloatDummy(GLuint buf, Cachef& c)
 
 static void SetUnsignedData(GLuint buf, Cacheu& c)
 {
-    std::cout << "set idx : " << c.size << std::endl;
     glBindBuffer(GL_ARRAY_BUFFER, buf);
     glBufferData(GL_ARRAY_BUFFER, c.size, c.data, GL_STATIC_DRAW);
 }
@@ -39,6 +37,7 @@ RenderObj::RenderObj():
     norm_buf(0),
     col_buf(0),
     shader(nullptr),
+    global_uniforms(nullptr),
     smooth(true),
     vert_comp_size(3),
     idx_comp_size(3),
@@ -60,6 +59,7 @@ RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size, int i_c_size):
     norm_buf(0),
     col_buf(0),
     shader(nullptr),
+    global_uniforms(nullptr),
     smooth(true),
     vert_comp_size(v_c_size),
     idx_comp_size(i_c_size),
@@ -77,9 +77,6 @@ RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size, int i_c_size):
         glGenBuffers(1, vbo_list + 2);
     if (c_c_size)
         glGenBuffers(1, vbo_list + 3);
-
-    for (int i = 0; i < 4; i++)
-        std::cout << "buf idx:" << vbo_list[i] << std::endl;
 }
 
 RenderObj::~RenderObj()
@@ -117,21 +114,19 @@ void RenderObj::updateData(Mesh* mesh)
 
 void RenderObj::render()
 {
-    // todo : put shader related stuff here
     shader->use();
+    global_uniforms->uploadUniforms();
     shader->uniform_table.uploadUniforms();
 
     for (AttribTable::iterator it = shader->attrib_table.begin(); it != shader->attrib_table.end(); ++it)
     {
-        std::cout << "handling attribute " << it->first << ", with buf" << vbo_list[it->second] << " comp size : " << comp_size[it->second] << std::endl;
         glEnableVertexAttribArray(it->first);
         glBindBuffer(GL_ARRAY_BUFFER, vbo_list[it->second]);
-        glVertexAttribPointer(0, comp_size[it->second], GL_FLOAT, GL_FALSE, 0, (void*)0);
+        glVertexAttribPointer(it->first, comp_size[it->second], GL_FLOAT, GL_FALSE, 0, (void*)0);
     }
 
     if (smooth)
     {
-        std::cout << "draw elements :" << idx_cnt << std::endl;
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buf);
         glDrawElements(GL_TRIANGLES, idx_cnt, GL_UNSIGNED_INT, (void*)0);
     }
@@ -139,4 +134,7 @@ void RenderObj::render()
     {
         glDrawArrays(GL_TRIANGLES, 0, idx_cnt);
     }
+
+    for (AttribTable::iterator it = shader->attrib_table.begin(); it != shader->attrib_table.end(); ++it)
+        glDisableVertexAttribArray(it->first);
 }

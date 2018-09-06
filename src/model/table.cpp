@@ -169,10 +169,8 @@ bool AttribTable::loadDescription(const rapidjson::Value& v)
         return false;
     }
 
-    std::cout << "parsing attributes" << std::endl;
     for (rapidjson::Value::ConstMemberIterator it = v.MemberBegin(); it != v.MemberEnd(); ++it)
     {
-        std::cout << it->name.GetString() << " " << it->value.GetInt() << std::endl;
         this->emplace(std::stoi(it->name.GetString()), it->value.GetInt());
     }
     return true;

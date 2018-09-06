@@ -25,9 +25,6 @@ QtViewport::QtViewport(QWidget *parent) :
     //ObjLoader loader;
     //loader.load("/mnt/media/workspace/repos/self/vp/src/asset/cube.obj");
     //loader.fillMesh(&m_mesh);
-    std::cout << "load finished" << std::endl;
-    std::cout << "vert cnt : " << m_mesh.getVertCount() << std::endl;
-    std::cout << "idx cnt : " << m_mesh.getTriCount() << std::endl;
 	m_light.setType(LIGHT_PNT);
 	m_light.setPosition(glm::vec3(0.0f, 0.0f, -0.8f));
 	m_light.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -78,7 +75,8 @@ void QtViewport::initializeGL()
 	m_prog = m_program->getProgram();
     m_renderobj = new RenderObj(3, 3, 0, 3);
     m_renderobj->setShaderProgram(m_program);
-    m_renderobj->updateData(&m_mesh);
+    m_renderobj->setGlobalUniform(m_global_uniforms);
+    //m_renderobj->updateData(&m_mesh);
 
 	m_proj_loc = glGetUniformLocation(m_prog, "proj");
 	m_view_loc = glGetUniformLocation(m_prog, "view");
@@ -90,6 +88,8 @@ void QtViewport::initializeGL()
 	glGenVertexArrays(1, &m_vao);
 	glBindVertexArray(m_vao);
 
+    m_renderobj->updateData(&m_mesh);
+
 	glGenBuffers(1, &m_vbo1);
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo1);
 	glBufferData(GL_ARRAY_BUFFER, m_mesh.getVertSize(), m_mesh.getVerts(), GL_STATIC_DRAW);
@@ -99,7 +99,6 @@ void QtViewport::initializeGL()
     glGenBuffers(1, &m_vbo_idx);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo_idx);
     glBufferData(GL_ARRAY_BUFFER, m_mesh.getIdxSize(), m_mesh.getIdx(), GL_STATIC_DRAW);
-    std::cout << "old size\nvert " << m_mesh.getVertSize() << "\nnorm " << m_mesh.getNormSize() << std::endl;
 }
 
 void QtViewport::clearGL()
@@ -116,8 +115,7 @@ void QtViewport::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//glUseProgram(m_prog);
-	m_program->use();
+	//m_program->use();
 
 	m_proj_val = glm::perspective(1.047f, 4.f / 3.f, 1.f, 100.f);
 	glUniformMatrix4fv(m_proj_loc, 1, GL_FALSE, glm::value_ptr(m_proj_val));

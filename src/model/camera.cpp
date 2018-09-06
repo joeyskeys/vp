@@ -12,7 +12,7 @@ Camera::Camera():
     c = new (t) CameraObj;
 
 	c->eye = glm::vec3(0.f, 0.f, 2.f);
-	c->lookat = glm::vec3(0.f, 0.f, -1.f);
+	c->lookat = glm::vec3(0.f, 0.f, 0.f);
 	c->fov = 1.047f;
 	c->near_plane = 1.f;
 	c->ratio = 4.f / 3.f;

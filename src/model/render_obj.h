@@ -10,6 +10,7 @@ using SetUnsignedDataFunc = void (*)(GLuint, Cacheu&);
 
 class Mesh;
 class ShaderProgram;
+class UniformTable;
 
 class RenderObj
 {
@@ -24,26 +25,23 @@ public:
 
     inline void setSmooth(bool s) { smooth = s; }
     inline void setShaderProgram(ShaderProgram* s) { shader = s; }
+    inline void setGlobalUniform(UniformTable* t) { global_uniforms = t; }
     void updateData(Mesh* mesh);
     void render();
 
 private:
     inline void setVertData(Cachef& v) {
         setVertProxy(vert_buf, v);
-        std::cout << "vert size " << v.size << std::endl;
     }
     inline void setNormData(Cachef& n) {
         setNormProxy(norm_buf, n);
-        std::cout << "norm size " << n.size << std::endl;
     }
     inline void setColData(Cachef& c) {
         setColProxy(col_buf, c);
-        std::cout << "color size " << c.size << std::endl;
     }
     inline void setIdxData(Cacheu& i) {
         setIdxProxy(idx_buf, i);
         idx_cnt = i.size / sizeof(GLuint);
-        std::cout << "idx count is " << idx_cnt << std::endl;
     }
     
 
@@ -62,6 +60,7 @@ private:
 
     //Mesh *mesh;
     ShaderProgram *shader;
+    UniformTable *global_uniforms;
 
     bool smooth;
     union
