@@ -32,7 +32,7 @@ public:
 	inline void			deletePtr(T *ptr) { *ptr = data[getCount() - 1]; size -= sizeof(T); }
 	inline void			deleteIdxWithCnt(int idx, int cnt) { memcpy(data + idx, data + getCount() - cnt, cnt * sizeof(T)); }
 	inline void			deletePtrWithCnt(T *ptr, int cnt) { memcpy(ptr, data + getCount() - cnt, cnt * sizeof(T)); }
-    inline void setData(T& e, unsigned int idx) { data[idx] = e; }
+    inline void         setData(T& e, unsigned int idx) { data[idx] = e; }
 
     T& operator[] (unsigned int idx);
     const T& operator[] (unsigned int idx) const;

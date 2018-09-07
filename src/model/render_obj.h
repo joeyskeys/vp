@@ -27,6 +27,7 @@ public:
     inline void setShaderProgram(ShaderProgram* s) { shader = s; }
     inline void setGlobalUniform(UniformTable* t) { global_uniforms = t; }
     void updateData(Mesh* mesh);
+    void updateData(Cachef* vcache, Cachef* ncache, Cachef* ccache, Cacheu* icache);
     void render();
 
 private:

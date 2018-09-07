@@ -101,7 +101,7 @@ void RenderObj::updateData(Mesh* mesh)
     if (smooth)
     {
         setVertData(mesh->getVertCache());
-        setNormData(mesh->getNormCache());
+        setNormData(mesh->getColCache());
         setColData(mesh->getColCache());
         setIdxData(mesh->getIdxCache());
     }
@@ -110,6 +110,18 @@ void RenderObj::updateData(Mesh* mesh)
         setVertData(mesh->getExpandedVertCache());
         setNormData(mesh->getExpandedNormCache());
     }
+}
+
+void RenderObj::updateData(Cachef* vcache, Cachef* ncache, Cachef* ccache, Cacheu* icache)
+{
+    if (vcache)
+        setVertData(*vcache);
+    if (ncache)
+        setNormData(*ncache);
+    if (ccache)
+        setColData(*ccache);
+    if (icache)
+        setIdxData(*icache);
 }
 
 void RenderObj::render()

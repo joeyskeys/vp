@@ -67,16 +67,27 @@ void QtViewport::initializeGL()
     //m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
     m_global_uniforms->loadDescription("/home/chenmiwei/Work/source/vp/src/shaders/global_uniforms.json");
     //m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic");
-    if (!m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "basic"))
+    if (!m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "pick"))
     {
         std::cout << "shader init failed" << std::endl;
         exit(1);
     }
 	m_prog = m_program->getProgram();
-    m_renderobj = new RenderObj(3, 3, 0, 3);
+    //m_renderobj = new RenderObj(3, 3, 0, 3);
+    m_renderobj = new RenderObj(3, 3, 0, 1);
     m_renderobj->setShaderProgram(m_program);
     m_renderobj->setGlobalUniform(m_global_uniforms);
     //m_renderobj->updateData(&m_mesh);
+    
+    Cachef face_idx;
+    face_idx.reserve(m_mesh.getIdxCount());
+    for (int i = 0; i < m_mesh.getIdxCount(); i++)
+    {
+        float *v = (float*)(&i);
+        face_idx.setData(*v, i);
+    }
+
+    m_renderobj->updateData(nullptr, nullptr, &face_idx, nullptr);
 
 	m_proj_loc = glGetUniformLocation(m_prog, "proj");
 	m_view_loc = glGetUniformLocation(m_prog, "view");
@@ -107,8 +118,6 @@ void QtViewport::clearGL()
 	glDeleteBuffers(1, &m_vbo2);
     glDeleteBuffers(1, &m_vbo_idx);
 	glDeleteBuffers(1, &m_vao);
-	//if (m_prog)
-	//	glDeleteProgram(m_prog);
 }
 
 void QtViewport::paintGL()
