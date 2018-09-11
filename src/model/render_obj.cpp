@@ -32,10 +32,14 @@ static void setUnsignedDummy(GLuint buf, Cacheu& c)
 }
 
 RenderObj::RenderObj():
+    vao(0),
     vert_buf(0),
     idx_buf(0),
     norm_buf(0),
     col_buf(0),
+    fbo(0),
+    rbo_color(0),
+    rbo_depth(0),
     shader(nullptr),
     global_uniforms(nullptr),
     smooth(true),
@@ -49,15 +53,19 @@ RenderObj::RenderObj():
     setNormProxy(&setFloatData),
     setColProxy(&setFloatData),
     setIdxProxy(&SetUnsignedData)
-{
+{jG
     glGenBuffers(4, vbo_list);
 };
 
 RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size, int i_c_size):
+    vao(0),
     vert_buf(0),
     idx_buf(0),
     norm_buf(0),
     col_buf(0),
+    fbo(0),
+    rbo_color(0),
+    rbo_depth(0),
     shader(nullptr),
     global_uniforms(nullptr),
     smooth(true),
@@ -72,6 +80,7 @@ RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size, int i_c_size):
     setColProxy(c_c_size ? &setFloatData : &setFloatDummy),
     setIdxProxy(&SetUnsignedData)
 {
+    glGenVertexArrays(1, &vao);
     glGenBuffers(2, vbo_list);
     if (n_c_size)
         glGenBuffers(1, vbo_list + 2);
@@ -81,6 +90,7 @@ RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size, int i_c_size):
 
 RenderObj::~RenderObj()
 {
+    glDeleteVertexArrays(1, &vao);
     glDeleteBuffers(4, vbo_list);
 }
 
@@ -98,6 +108,7 @@ RenderObj& RenderObj::operator=(RenderObj&& b)
 
 void RenderObj::updateData(Mesh* mesh)
 {
+    glBindVertexArray(vao);
     if (smooth)
     {
         setVertData(mesh->getVertCache());
@@ -110,6 +121,23 @@ void RenderObj::updateData(Mesh* mesh)
         setVertData(mesh->getExpandedVertCache());
         setNormData(mesh->getExpandedNormCache());
     }
+
+    for (AttribTable::iterator it = shader->attrib_table.begin(); it != shader->attrib_table.end(); ++it)
+    {
+        glEnableVertexAttribArray(it->first);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo_list[it->second]);
+        glVertexAttribPointer(it->first, comp_size[it->second], GL_FLOAT, GL_FALSE, 0, (void*)0);
+    }
+
+    if (smooth)
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buf);
+    else
+        glDrawArrays(GL_TRIANGLES, 0, idx_cnt);
+
+    for (AttribTable::iterator it = shader->attrib_table.begin(); it != shader->attrib_table.end(); ++it)
+        glDisableVertexAttribArray(it->first);
+
+    glBindVertexArray(0);
 }
 
 void RenderObj::updateData(Cachef* vcache, Cachef* ncache, Cachef* ccache, Cacheu* icache)
@@ -130,6 +158,7 @@ void RenderObj::render()
     global_uniforms->uploadUniforms();
     shader->uniform_table.uploadUniforms();
 
+    /*
     for (AttribTable::iterator it = shader->attrib_table.begin(); it != shader->attrib_table.end(); ++it)
     {
         glEnableVertexAttribArray(it->first);
@@ -149,4 +178,55 @@ void RenderObj::render()
 
     for (AttribTable::iterator it = shader->attrib_table.begin(); it != shader->attrib_table.end(); ++it)
         glDisableVertexAttribArray(it->first);
+    */
+
+    glBindVertexArray(vao);
+    if (smooth)
+        glDrawElements(GL_TRIANGLES, idx_cnt, GL_UNSIGNED_INT, (void*)0);
+    else
+        glDrawArrays(GL_TRIANGLES, 0, idx_cnt);
+    glBindVertexArray(0);
+}
+
+void RenderObj::initFBO(int w, int h)
+{
+    glGenFramebuffers(1, &fbo);
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glGenRenderbuffers(1, &rbo_color);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo_color);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, w, h);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rbo_color);
+    glGenRenderbuffers(1, &rbo_depth);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, w, h);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_depth);
+    if (glCheckFrameBufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "error : framebuffer is not complete" << std::endl;
+    glBinderFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void RenderObj::clearFBO()
+{
+    glDeleteRenderbuffers(1, &rbo);
+    glDeleteFramebuffers(1, &fbo);
+}
+
+void RenderObj::renderToFBO()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+    glEnable(GL_DEPTH_TEST);
+    glClearColor(0.f, 0.f, 0.f, 0.f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glBindVertexArray(vao);
+    if (smooth)
+        glDrawElements(GL_TRIANGLES, idx_cnt, GL_UNSIGNED_INT, (void*)0);
+    else
+        glDrawArrays(GL_TRIANGLES, 0, idx_cnt);
+    glBindVertexArray(0);
+}
+
+void readPixelFromFBO()
+{
+
 }

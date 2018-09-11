@@ -30,6 +30,11 @@ public:
     void updateData(Cachef* vcache, Cachef* ncache, Cachef* ccache, Cacheu* icache);
     void render();
 
+    void initFBO(int w, int h);
+    void clearFBO();
+    void renderToFBO();
+    void readPixelFromFBO();
+
 private:
     inline void setVertData(Cachef& v) {
         setVertProxy(vert_buf, v);
@@ -47,6 +52,8 @@ private:
     
 
 private:
+    GLuint vao;
+
     union
     {
         GLuint vbo_list[4];
@@ -59,7 +66,10 @@ private:
         };
     };
 
-    //Mesh *mesh;
+    GLuint fbo;
+    GLuint rbo_color;
+    GLuint rbo_depth;
+
     ShaderProgram *shader;
     UniformTable *global_uniforms;
 
