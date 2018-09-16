@@ -5,6 +5,7 @@ if (NOT CMAKE_BUILD_TYPE)
 endif()
 
 set(CMAKE_CXX_STANDARD 11)
+cmake_policy(SET CMP0074 NEW)
 
 project(vp)
 
@@ -14,6 +15,8 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 if (WIN32)
 set(CMAKE_PREFIX_PATH "G:/QT/program/5.10.1/msvc2013_64" CACHE PATH "Location of Qt")
+elseif(APPLE)
+set(CMAKE_PREFIX_PATH "/usr/local/Cellar/qt/5.11.1")
 endif()
 
 find_package(Qt5Widgets)

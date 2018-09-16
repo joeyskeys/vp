@@ -27,6 +27,8 @@
 if(NOT GLEW_ROOT)
   if(WIN32)
     set(GLEW_ROOT "C:/Program Files/glew" CACHE PATH "Location of glew")
+  elseif(APPLE)
+    set(GLEW_ROOT "/usr/local/Cellar" CACHE PATH "Location of glew")
   else()
     set(GLEW_ROOT "/usr/local" CACHE PATH "Location of glew")
   endif()
