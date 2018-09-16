@@ -1,7 +1,6 @@
 #version 330
 
 layout(location=0) in vec3 vert;
-layout(location=1) in float index;
 out vec3 frag_vert;
 
 uniform mat4 proj;

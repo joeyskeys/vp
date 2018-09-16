@@ -41,13 +41,10 @@ protected:
 	void wheelEvent(QWheelEvent *event) override;
 
 private:
-	GLuint		m_prog;
 	ShaderProgram *m_program;
+    ShaderProgram *m_pick_program;
     UniformTable *m_global_uniforms;
 	Camera		*m_camera;
-
-	GLuint		m_vbo1, m_vbo2, m_vbo_idx;
-	GLuint		m_vao;
 
     GLuint      m_proj_loc;
 	glm::mat4	m_proj_val;
@@ -59,8 +56,11 @@ private:
     Mesh        m_mesh;
 	Light		m_light;
     RenderObj   *m_renderobj;
+    RenderObj   *m_pick_rdo;
 
 	glm::vec2	m_mouse_pos;
 	bool		m_move_enabled;
 	bool		m_rotate_enabled;
+
+    unsigned int m_pixel[4];
 };

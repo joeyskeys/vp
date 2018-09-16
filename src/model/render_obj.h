@@ -33,7 +33,8 @@ public:
     void initFBO(int w, int h);
     void clearFBO();
     void renderToFBO();
-    void readPixelFromFBO();
+    void readPixelFromFBO(int x, int y, void* data);
+    void renderAndReadFromFBO(int x, int y, void* data);
 
 private:
     inline void setVertData(Cachef& v) {

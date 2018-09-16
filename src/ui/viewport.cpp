@@ -15,7 +15,6 @@
 
 QtViewport::QtViewport(QWidget *parent) :
 	QOpenGLWidget(parent),
-	m_prog(0),
 	m_move_enabled(false),
 	m_rotate_enabled(false)
 {
@@ -29,6 +28,7 @@ QtViewport::QtViewport(QWidget *parent) :
 	m_light.setPosition(glm::vec3(0.0f, 0.0f, -0.8f));
 	m_light.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
 	m_program = new ShaderProgram;
+    m_pick_program = new ShaderProgram;
     m_global_uniforms = new UniformTable();
 	m_camera = new Camera;
 	QPoint p = mapFromGlobal(QCursor::pos());
@@ -64,94 +64,54 @@ void QtViewport::initializeGL()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	
 	//m_program->load("E:/work/repos/vp/src/shaders/", "basic");
-    //m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
-    m_global_uniforms->loadDescription("/home/chenmiwei/Work/source/vp/src/shaders/global_uniforms.json");
-    //m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic");
-    if (!m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "pick"))
+    m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
+    //m_global_uniforms->loadDescription("/home/chenmiwei/Work/source/vp/src/shaders/global_uniforms.json");
+    if (!m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic"))
+    //if (!m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "pick"))
     {
         std::cout << "shader init failed" << std::endl;
         exit(1);
     }
-	m_prog = m_program->getProgram();
-    //m_renderobj = new RenderObj(3, 3, 0, 3);
-    m_renderobj = new RenderObj(3, 3, 0, 1);
-    m_renderobj->setShaderProgram(m_program);
-    m_renderobj->setGlobalUniform(m_global_uniforms);
-    //m_renderobj->updateData(&m_mesh);
-    
-    Cachef face_idx;
-    face_idx.reserve(m_mesh.getIdxCount());
-    for (int i = 0; i < m_mesh.getIdxCount(); i++)
+    if (!m_pick_program->load("/mnt/media/workspace/repos/self/vp/src/shaders/", "pick"))
     {
-        float *v = (float*)(&i);
-        face_idx.setData(*v, i);
+        std::cout << "pick shader init failed" << std::endl;
+        exit(1);
     }
 
-    m_renderobj->updateData(nullptr, nullptr, &face_idx, nullptr);
-
-	m_proj_loc = glGetUniformLocation(m_prog, "proj");
-	m_view_loc = glGetUniformLocation(m_prog, "view");
-	m_light_position_loc = glGetUniformLocation(m_prog, "light.position");
-	m_light_color_loc = glGetUniformLocation(m_prog, "light.color");
-    
-    m_global_uniforms->updateLocation(m_program);
-
-	glGenVertexArrays(1, &m_vao);
-	glBindVertexArray(m_vao);
-
+    m_renderobj = new RenderObj(3, 3, 0, 3);
+    //m_renderobj = new RenderObj(3, 0, 0, 3);
+    m_renderobj->setShaderProgram(m_program);
+    m_renderobj->setGlobalUniform(m_global_uniforms);
     m_renderobj->updateData(&m_mesh);
 
-	glGenBuffers(1, &m_vbo1);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo1);
-	glBufferData(GL_ARRAY_BUFFER, m_mesh.getVertSize(), m_mesh.getVerts(), GL_STATIC_DRAW);
-	glGenBuffers(1, &m_vbo2);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo2);
-	glBufferData(GL_ARRAY_BUFFER, m_mesh.getNormSize(), m_mesh.getNorms(), GL_STATIC_DRAW);
-    glGenBuffers(1, &m_vbo_idx);
-    glBindBuffer(GL_ARRAY_BUFFER, m_vbo_idx);
-    glBufferData(GL_ARRAY_BUFFER, m_mesh.getIdxSize(), m_mesh.getIdx(), GL_STATIC_DRAW);
+    m_pick_rdo = new RenderObj(3, 0, 0, 3);
+    m_pick_rdo->setShaderProgram(m_pick_program);
+    m_pick_rdo->setGlobalUniform(m_global_uniforms);
+    m_pick_rdo->updateData(&m_mesh);
+    m_pick_rdo->initFBO(width(), height());
 }
 
 void QtViewport::clearGL()
 {
-	glDeleteBuffers(1, &m_vbo1);
-	glDeleteBuffers(1, &m_vbo2);
-    glDeleteBuffers(1, &m_vbo_idx);
-	glDeleteBuffers(1, &m_vao);
+
 }
 
 void QtViewport::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//m_program->use();
-
 	m_proj_val = glm::perspective(1.047f, 4.f / 3.f, 1.f, 100.f);
 	glUniformMatrix4fv(m_proj_loc, 1, GL_FALSE, glm::value_ptr(m_proj_val));
 
-	//glUniformMatrix4fv(m_view_loc, 1, GL_FALSE, m_camera->getViewMatrixPtr());
-	//glUniform3fv(m_light_position_loc, 1, (GLfloat*)m_light.getData());
-
 	m_global_uniforms->updateUniform("proj", glm::value_ptr(m_proj_val));
     m_global_uniforms->updateUniform("view", m_camera->getViewMatrixPtr());
-    m_global_uniforms->uploadUniforms();
-
-    /*
-    glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo1);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo2);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
-    //glDrawArrays(GL_TRIANGLES, 0, m_mesh.getIdxCount());
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_vbo_idx);
-    glDrawElements(GL_TRIANGLES, m_mesh.getIdxSize(), GL_UNSIGNED_INT, (void*)0);
-	glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    std::cout << "idx cnt " << m_mesh.getIdxCount() << std::endl;
-    */
     
-    m_renderobj->render();
+    //m_renderobj->render();
+    m_pick_rdo->render();
+    QPoint cur_pos = mapFromGlobal(QCursor::pos());
+    m_pick_rdo->renderAndReadFromFBO(cur_pos.x(), cur_pos.y(), m_pixel);
+    std::cout << "x y info " << cur_pos.x() << " " << cur_pos.y() << std::endl;
+    std::cout << "pixel info " << m_pixel[0] << " " << m_pixel[1] << " " << m_pixel[2] << " " << m_pixel[3] << std::endl;
 }
 
 void QtViewport::resizeGL(int width, int height)
