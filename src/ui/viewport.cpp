@@ -33,6 +33,7 @@ QtViewport::QtViewport(QWidget *parent) :
 	m_camera = new Camera;
 	QPoint p = mapFromGlobal(QCursor::pos());
 	m_mouse_pos = glm::vec2(p.x(), p.y());
+    m_pixel[0] = m_pixel[1] = m_pixel[2] = m_pixel[3] = 0;
 }
 
 QtViewport::~QtViewport()
