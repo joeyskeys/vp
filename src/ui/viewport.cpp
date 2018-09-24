@@ -107,12 +107,12 @@ void QtViewport::paintGL()
 	m_global_uniforms->updateUniform("proj", glm::value_ptr(m_proj_val));
     m_global_uniforms->updateUniform("view", m_camera->getViewMatrixPtr());
     
-    //m_renderobj->render();
-    m_pick_rdo->render();
+    m_renderobj->render();
     QPoint cur_pos = mapFromGlobal(QCursor::pos());
-    m_pick_rdo->renderAndReadFromFBO(cur_pos.x(), cur_pos.y(), m_pixel);
+    m_pick_rdo->renderAndReadFromFBO(cur_pos.x(), height() - cur_pos.y(), m_pixel);
+    //glReadPixels(cur_pos.x(), cur_pos.y(), 1, 1, GL_RGBA, GL_FLOAT, m_pixel);
     std::cout << "x y info " << cur_pos.x() << " " << cur_pos.y() << std::endl;
-    std::cout << "pixel info " << m_pixel[0] << " " << m_pixel[1] << " " << m_pixel[2] << " " << m_pixel[3] << std::endl;
+    std::cout << "pixel info " << *(m_pixel+0) << " " << *(m_pixel+1) << " " << *(m_pixel+2) << " " << *(int*)(m_pixel+3) << std::endl;
 }
 
 void QtViewport::resizeGL(int width, int height)

@@ -68,7 +68,8 @@ private:
     };
 
     GLuint fbo;
-    GLuint rbo_color;
+    GLuint rbo_color0;
+    GLuint rbo_color1;
     GLuint rbo_depth;
 
     ShaderProgram *shader;

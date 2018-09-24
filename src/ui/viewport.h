@@ -62,5 +62,6 @@ private:
 	bool		m_move_enabled;
 	bool		m_rotate_enabled;
 
-    unsigned int m_pixel[4];
+    //unsigned int m_pixel[4];
+    float       m_pixel[4];
 };

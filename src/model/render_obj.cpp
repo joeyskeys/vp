@@ -6,6 +6,9 @@
 #include <cstring>
 #include <iostream>
 
+#include <QImage>
+#include <QString>
+
 const static char NORMAL =   1;
 const static char COLOR =    2;
 
@@ -38,7 +41,8 @@ RenderObj::RenderObj():
     norm_buf(0),
     col_buf(0),
     fbo(0),
-    rbo_color(0),
+    rbo_color0(0),
+    rbo_color1(1),
     rbo_depth(0),
     shader(nullptr),
     global_uniforms(nullptr),
@@ -64,7 +68,8 @@ RenderObj::RenderObj(int v_c_size, int n_c_size, int c_c_size, int i_c_size):
     norm_buf(0),
     col_buf(0),
     fbo(0),
-    rbo_color(0),
+    rbo_color0(0),
+    rbo_color1(0),
     rbo_depth(0),
     shader(nullptr),
     global_uniforms(nullptr),
@@ -153,28 +158,6 @@ void RenderObj::render()
     global_uniforms->uploadUniforms();
     shader->uniform_table.uploadUniforms();
 
-    /*
-    for (AttribTable::iterator it = shader->attrib_table.begin(); it != shader->attrib_table.end(); ++it)
-    {
-        glEnableVertexAttribArray(it->first);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_list[it->second]);
-        glVertexAttribPointer(it->first, comp_size[it->second], GL_FLOAT, GL_FALSE, 0, (void*)0);
-    }
-
-    if (smooth)
-    {
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buf);
-        glDrawElements(GL_TRIANGLES, idx_cnt, GL_UNSIGNED_INT, (void*)0);
-    }
-    else
-    {
-        glDrawArrays(GL_TRIANGLES, 0, idx_cnt);
-    }
-
-    for (AttribTable::iterator it = shader->attrib_table.begin(); it != shader->attrib_table.end(); ++it)
-        glDisableVertexAttribArray(it->first);
-    */
-
     glBindVertexArray(vao);
     if (smooth)
         glDrawElements(GL_TRIANGLES, idx_cnt, GL_UNSIGNED_INT, (void*)0);
@@ -187,14 +170,23 @@ void RenderObj::initFBO(int w, int h)
 {
     glGenFramebuffers(1, &fbo);
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    glGenRenderbuffers(1, &rbo_color);
-    glBindRenderbuffer(GL_RENDERBUFFER, rbo_color);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA32UI, w, h);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rbo_color);
+
+    glGenRenderbuffers(1, &rbo_color0);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo_color0);
+    //glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA, w, h);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_RGB32F, w, h);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, rbo_color0);
+
+    // GL_RED_INTEGER is not a valid iternal format for glRenderbufferStorage
+    glGenRenderbuffers(1, &rbo_color1);
+    glBindRenderbuffer(GL_RENDERBUFFER, rbo_color1);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_R32I, w, h);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_RENDERBUFFER, rbo_color1);
+
     glGenRenderbuffers(1, &rbo_depth);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo_depth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, w, h);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo_depth);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, w, h);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo_depth);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "error : framebuffer is not complete" << std::endl;
     else
@@ -204,10 +196,11 @@ void RenderObj::initFBO(int w, int h)
 
 void RenderObj::clearFBO()
 {
-    glDeleteRenderbuffers(1, &rbo_color);
+    glDeleteRenderbuffers(1, &rbo_color0);
+    glDeleteRenderbuffers(1, &rbo_color1);
     glDeleteRenderbuffers(1, &rbo_depth);
     glDeleteFramebuffers(1, &fbo);
-    rbo_color = rbo_depth = fbo = 0;
+    rbo_color0 = rbo_color1 = rbo_depth = fbo = 0;
 }
 
 void RenderObj::renderToFBO()
@@ -218,6 +211,8 @@ void RenderObj::renderToFBO()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glBindVertexArray(vao);
+    const GLenum buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, buffers);
     if (smooth)
         glDrawElements(GL_TRIANGLES, idx_cnt, GL_UNSIGNED_INT, (void*)0);
     else
@@ -229,8 +224,8 @@ void RenderObj::renderToFBO()
 void RenderObj::readPixelFromFBO(int x, int y, void* data)
 {
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-    //glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glReadPixels(x, y, 1, 1, GL_RGBA32UI, GL_UNSIGNED_INT, data);
+    glReadBuffer(GL_COLOR_ATTACHMENT0);
+    glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, data);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
@@ -246,13 +241,20 @@ void RenderObj::renderAndReadFromFBO(int x, int y, void* data)
     glClearColor(0.f, 0.f, 0.f, 0.1f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    //glDrawBuffer(GL_COLOR_ATTACHMENT0);
+    const GLuint buffers[] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+    glDrawBuffers(2, buffers);
     glBindVertexArray(vao);
     if (smooth)
         glDrawElements(GL_TRIANGLES, idx_cnt, GL_UNSIGNED_INT, (void*)0);
     else
         glDrawArrays(GL_TRIANGLES, 0, idx_cnt);
     glReadBuffer(GL_COLOR_ATTACHMENT0);
-    glReadPixels(x, y, 1, 1, GL_RGBA, GL_UNSIGNED_INT, data);
+    //glReadPixels(x, y, 1, 1, GL_RGBA, GL_FLOAT, data);
+    glReadPixels(x, y, 1, 1, GL_RGB, GL_FLOAT, data);
+    glReadBuffer(GL_COLOR_ATTACHMENT1);
+    glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_INT, (int*)(data) + 3);
     glBindVertexArray(0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
+
