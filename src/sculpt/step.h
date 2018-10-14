@@ -15,11 +15,17 @@ public:
     Step(Step&& b);
     Step& operator=(Step&& b);
 
+    void apply();
+
 private:
+    void getAffectedVerts();
+
+public:
     float intensity;
     glm::vec2 screen_position;
     glm::vec3 space_position;
     glm::vec3 normal;
+    int       face_index;
 };
 
 using StepPtr = std::unique_ptr<Step>;

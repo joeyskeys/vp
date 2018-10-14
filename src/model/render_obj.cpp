@@ -238,7 +238,8 @@ void RenderObj::renderAndReadFromFBO(int x, int y, void* data)
 
     glBindFramebuffer(GL_FRAMEBUFFER, fbo);
     glEnable(GL_DEPTH_TEST);
-    glClearColor(0.f, 0.f, 0.f, 0.1f);
+    int default_idx = -1;
+    glClearColor(0.f, 0.f, 0.f, *(float*)(&default_idx));
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     //glDrawBuffer(GL_COLOR_ATTACHMENT0);

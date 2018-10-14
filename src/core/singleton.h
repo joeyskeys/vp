@@ -1,5 +1,7 @@
 #pragma once
 
+// code from appleseed
+
 #include "noncopyable.h"
 
 template <typename T>

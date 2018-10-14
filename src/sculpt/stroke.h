@@ -14,6 +14,8 @@ public:
     Stroke(Stroke&& b);
     Stroke& operator=(Stroke&& b);
 
+    inline void addStep(StepPtr&& step_ptr) { steps.emplace_back(step_ptr); }
+
 private:
-    std::vector<Step*> steps
+    std::vector<StepPtr> steps
 };

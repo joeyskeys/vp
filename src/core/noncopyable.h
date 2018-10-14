@@ -1,5 +1,7 @@
 #pragma once
 
+// code from appleseed
+
 class NonCopyable
 {
   protected:

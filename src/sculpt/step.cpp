@@ -1,5 +1,7 @@
 #include "step.h"
 
+#include "core/context.h"
+
 #include <utility>
 
 Step::Step():
@@ -48,4 +50,10 @@ Step& operator=(Step&& b)
     screen_position = std::move(b.screen_position);
     space_position = std::move(b.space_position);
     normal = std::move(b.normal)
+}
+
+void Step::apply()
+{
+    Context &ctx = Context::instance();
+
 }

@@ -1,9 +1,10 @@
 #pragma once
 
 #include "step.h"
+#include "stroke.h"
 
 #include <glm/glm.hpp>
-#include <glm/vec4.hpp>
+#include <glm/vec3.hpp>
 
 class Brush
 {
@@ -15,9 +16,14 @@ public:
     Brush(Brush&& b);
     Brush& operator=(Brush&& b);
 
-    StepPtr sample(); 
+    void    generateNewStroke();
+    Stroke* finishCurrentStroke();
+    void    sample(glm::vec3 info, int idx); 
+
+    void    applyToMesh();
 
 private:
     float radius;
     float falloff;
+    Stroke *current_stroke
 };
