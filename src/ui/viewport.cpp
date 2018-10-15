@@ -65,15 +65,17 @@ void QtViewport::initializeGL()
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	
 	//m_program->load("E:/work/repos/vp/src/shaders/", "basic");
-    m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
-    //m_global_uniforms->loadDescription("/home/chenmiwei/Work/source/vp/src/shaders/global_uniforms.json");
-    if (!m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic"))
+    //m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
+    m_global_uniforms->loadDescription("/home/chenmiwei/Work/repos/vp/src/shaders/global_uniforms.json");
+    //if (!m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic"))
     //if (!m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "pick"))
+    if (!m_program->load("/home/chenmiwei/Work/repos/vp/src/shaders/", "wireframe"))
     {
         std::cout << "shader init failed" << std::endl;
         exit(1);
     }
-    if (!m_pick_program->load("/mnt/media/workspace/repos/self/vp/src/shaders/", "pick"))
+    //if (!m_pick_program->load("/mnt/media/workspace/repos/self/vp/src/shaders/", "pick"))
+    if (!m_pick_program->load("/home/chenmiwei/Work/repos/vp/src/shaders/", "pick"))
     {
         std::cout << "pick shader init failed" << std::endl;
         exit(1);

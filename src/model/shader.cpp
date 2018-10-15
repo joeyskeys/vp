@@ -42,7 +42,7 @@ ShaderProgram& ShaderProgram::operator=(ShaderProgram&& rhs)
 	return *this;
 }
 
-static GLuint loadShader(GLenum type, char *buf, GLint size)
+static GLuint loadShader(GLenum type, const char *buf, GLint size)
 {
     GLint succ, logsize;
     char* log;
@@ -83,6 +83,12 @@ bool ShaderProgram::load(const std::string& p, const std::string& n)
     if (!uf.good())
         return false;
 
+    bool has_geometry_shader = false;
+    std::string gpath = p + n + ".geom";
+    ifstream gf(gpath, std::ios::in | std::ios::binary);
+    if (gf.good())
+        has_geometry_shader = true;
+
     //if (!uniform_table.loadDescription(upath))
     if (!loadDescriptionFile(upath, uniform_table, attrib_table))
         return false;
@@ -109,27 +115,57 @@ bool ShaderProgram::load(const std::string& p, const std::string& n)
     GLuint fs = loadShader(GL_FRAGMENT_SHADER, buf, size + 1);
 	free(buf);
     if (!fs)
+    {
+        glDeleteShader(vs);
         return false;
+    }
 
+    GLuint gs = 0;
+    if (has_geometry_shader)
+    {
+        std::cout << "init geom shader" << std::endl;
+        size = getFileSize(gf);
+        buf = (char*)malloc(size + 1);
+        gf.read(buf, size);
+        buf[size] = 0;
+        gf.close();
+        gs = loadShader(GL_GEOMETRY_SHADER, buf, size + 1);
+        free(buf);
+        if (!gs)
+        {
+            glDeleteShader(vs);
+            glDeleteShader(fs);
+            return false;
+        }
+    }
+
+    std::cout << "make program" << std::endl;
     if (program)
         glDeleteProgram(program);
     program = glCreateProgram();
     glAttachShader(program, vs);
     glAttachShader(program, fs);
+    if (has_geometry_shader)
+        glAttachShader(program, gs);
     glLinkProgram(program);
     GLint succ;
     glGetProgramiv(program, GL_LINK_STATUS, &succ);
+
+    glDeleteShader(vs);
+    glDeleteShader(fs);
+    if (has_geometry_shader)
+        glDeleteShader(gs);
+
     if (succ == GL_FALSE)
     {
         GLint logsize;
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &logsize);
         buf = (char*)malloc(logsize);
+        glGetProgramInfoLog(program, logsize, &logsize, buf);
 		cout << buf << endl;
         free(buf);
         glDeleteProgram(program);
         program = 0;
-        glDeleteShader(vs);
-        glDeleteShader(fs);
         return false;
     }
 

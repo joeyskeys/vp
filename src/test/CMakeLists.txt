@@ -20,6 +20,9 @@ target_link_libraries(test1
         model
         ${GLEW_LIBRARIES}
         ${PLATFORM_SPEC_LIBS}
+        Qt5::Widgets
+        Qt5::Core
+        Qt5::Gui
     )
 
 source_group("Source Files"

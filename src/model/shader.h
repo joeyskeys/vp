@@ -27,7 +27,7 @@ public:
     ShaderProgram& operator=(ShaderProgram&& rhs);
 
     inline bool isInitailized() const { return !program; }
-    bool	load(const string& p, const string& n);
+    bool	    load(const string& p, const string& n);
     inline void use() const { glUseProgram(program); }
 
     inline GLuint   getProgram() const { return program; }
