@@ -22,9 +22,10 @@ QtViewport::QtViewport(QWidget *parent) :
     //m_mesh.fillCube();
     //m_mesh.updateExpandedMesh();
     ObjLoader loader;
-    loader.load("/home/chenmiwei/Work/asset/obj/sphere3.obj");
+    loader.load("/home/chenmiwei/Work/asset/obj/sphere2.obj");
     //loader.load("/home/chenmiwei/Work/asset/obj/obj2.obj");
     loader.fillMesh(&m_mesh);
+    m_dynamic_mesh = DynamicMesh(&m_mesh);
 	m_light.setType(LIGHT_PNT);
 	m_light.setPosition(glm::vec3(0.0f, 0.0f, -0.8f));
 	m_light.setColor(glm::vec3(1.0f, 1.0f, 1.0f));

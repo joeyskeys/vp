@@ -12,6 +12,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <model/mesh.h>
+#include <model/dynamic_mesh.h>
 #include <model/render_obj.h>
 #include <model/light.h>
 #include <model/shader.h>
@@ -54,6 +55,7 @@ private:
     GLuint      m_light_color_loc;
 
     Mesh        m_mesh;
+    DynamicMesh m_dynamic_mesh;
 	Light		m_light;
     RenderObj   *m_renderobj;
     RenderObj   *m_pick_rdo;

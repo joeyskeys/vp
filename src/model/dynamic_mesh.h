@@ -55,13 +55,6 @@ struct DFace
 	glm::vec3	  getNormal();
 };
 
-glm::vec3 DFace::getNormal()
-{
-	glm::vec3 a = loops[0]->getVector();
-	glm::vec3 b = -(loops[0]->next->next->getVector());
-	return glm::normalize(glm::cross(a, b));
-}
-
 struct DLoop
 {
 	DVert		*start;
@@ -84,6 +77,7 @@ using LoopQueue = std::deque<DLoop*>;
 class DynamicMesh
 {
 public:
+	DynamicMesh();
 	explicit DynamicMesh(const Mesh *m);
 	~DynamicMesh();
 	DynamicMesh(const DynamicMesh& b) = delete;

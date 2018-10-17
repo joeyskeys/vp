@@ -5,6 +5,19 @@
 #include <glm/vec3.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+glm::vec3 DFace::getNormal()
+{
+	glm::vec3 a = loops[0]->getVector();
+	glm::vec3 b = -(loops[0]->next->next->getVector());
+	return glm::normalize(glm::cross(a, b));
+}
+
+DynamicMesh::DynamicMesh():
+	mesh(nullptr)
+{
+
+}
+
 DynamicMesh::DynamicMesh(const Mesh *m):
 	mesh(const_cast<Mesh*>(m))
 {
@@ -86,6 +99,7 @@ DynamicMesh& DynamicMesh::operator=(DynamicMesh&& b)
 
 DVert* DynamicMesh::addVert(float *c)
 {
+	std::cout << "in add vert" << std::endl;
 	DVert *v = vcache.useNext();
 	v->co = c;
 	v->idx = vcache.getIdxOfPtr(v);
