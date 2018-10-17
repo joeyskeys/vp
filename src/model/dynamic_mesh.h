@@ -8,6 +8,10 @@
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <map>
+#include <deque>
+#include <set>
+
 typedef struct DVert DVert;
 typedef struct DEdge DEdge;
 typedef struct DFace DFace;
@@ -26,6 +30,8 @@ struct DVert
 
 	inline void setValue(float *v) { for (int i = 0; i < 3; i++) co[i] = v[i]; }
 	inline void setValue(glm::vec3 *v) { co[0] = v->x; co[1] = v->y; co[2] = v->z; }
+
+	glm::vec3	operator-(DVert& b) { return glm::make_vec3(co) - glm::make_vec3(b.co); }
 };
 
 struct DEdge
@@ -46,7 +52,15 @@ struct DFace
 	DLoop		 *loops[3];
 
 	inline int    getIdxOfLoop(DLoop *l) { return loops[0] == l ? 0 : (loops[1] == l ? 1 : 2); }
+	glm::vec3	  getNormal();
 };
+
+glm::vec3 DFace::getNormal()
+{
+	glm::vec3 a = loops[0]->getVector();
+	glm::vec3 b = -(loops[0]->next->next->getVector());
+	return glm::normalize(glm::cross(a, b));
+}
 
 struct DLoop
 {
@@ -60,7 +74,12 @@ struct DLoop
 
 	inline void	  evalDiskNext() { DLoop *tmp = next->next; disk_next = tmp->edge->getAnotherLoop(tmp); }
 	inline void   evalDiskPrev() { DLoop *tmp = edge->getAnotherLoop(this); disk_prev = tmp ? tmp->next : nullptr; }
+	inline glm::vec3 getVector() { return *end - *start; }
 };
+
+using VerticesSet = std::map<DVert*, std::pair<glm::vec3, float>>;
+using FaceSet = std::set<DFace*>;
+using LoopQueue = std::deque<DLoop*>;
 
 class DynamicMesh
 {
@@ -86,6 +105,7 @@ public:
 	void	addTriangle(unsigned int *idx);
 	void	edgeSplit(DEdge *e);
 	void	edgeCollapse(DEdge *e);
+	VerticesSet getAffectedVertices(glm::vec3& center, int face_idx, float radius);
 
 private:
 	Mesh	*mesh;

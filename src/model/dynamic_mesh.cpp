@@ -99,7 +99,7 @@ DEdge* DynamicMesh::addEdge(DVert *v1, DVert *v2)
 	{
 		if (l->end == v2)
 			return l->edge;
-		l = l->disk_next;
+		l = l->next;
 	}
 	l = v1->loop;
 	while (l)
@@ -280,4 +280,57 @@ void DynamicMesh::edgeCollapse(DEdge *e)
     // delete the left elements
     deleteVert(remove_v);
     deleteEdge(e);
+}
+
+static float projectedDistance(const glm::vec3& normal, const glm::vec3 center, const glm::vec3 pos)
+{
+	glm::vec3 N = glm::normalize(normal);
+	glm::vec3 V = pos - center;
+	return glm::length(V - glm::dot(V, N) * N);
+}
+
+VerticesSet DynamicMesh::getAffectedVertices(glm::vec3& center, int face_idx, float radius)
+{
+	DFace current_face = fcache[face_idx];
+	VerticesSet affected_verts;
+	LoopQueue 	loop_queue;
+	FaceSet 	face_set;
+
+	// apply bfs search to find all affected vertices
+	face_set.insert(&current_face);
+	for (int i = 0; i < 3; i++)
+	{
+		DLoop *l = current_face.loops[i];
+		loop_queue.push_back(l);
+		DVert *v = l->start;
+		affected_verts.emplace(make_pair(v, make_pair(glm::make_vec3(v->co), 1.f)));
+	}
+
+	while (loop_queue.size() > 0)
+	{
+		DLoop *current_loop = loop_queue.front();
+		DLoop *end = current_loop->next->next;
+		end = end->edge->getAnotherLoop(end);
+		DLoop *l = current_loop;
+		loop_queue.pop_front();
+		DVert* vert_ptr = nullptr;
+
+		while (l->disk_prev != end && l->disk_prev != nullptr)
+		{
+			DFace *f = l->disk_prev->face;
+			FaceSet::iterator it = face_set.find(f);
+			if (it != face_set.end())
+				continue;
+			face_set.insert(f);
+
+			DVert *v = l->disk_prev->end;
+			glm::vec3 vt_co = glm::make_vec3(v->co);
+			if (projectedDistance(f->getNormal(), center, vt_co) < radius)
+			{
+				affected_verts.emplace(make_pair(v, make_pair(vt_co, 1.f)));
+				DLoop *new_loop = l->disk_prev->next;
+				loop_queue.push_back(new_loop->edge->getAnotherLoop(new_loop));
+			}
+		}
+	}
 }

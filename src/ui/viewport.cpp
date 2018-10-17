@@ -19,11 +19,12 @@ QtViewport::QtViewport(QWidget *parent) :
 	m_rotate_enabled(false)
 {
     //m_mesh.fillTriangle();
-    m_mesh.fillCube();
+    //m_mesh.fillCube();
     //m_mesh.updateExpandedMesh();
-    //ObjLoader loader;
-    //loader.load("/mnt/media/workspace/repos/self/vp/src/asset/cube.obj");
-    //loader.fillMesh(&m_mesh);
+    ObjLoader loader;
+    loader.load("/home/chenmiwei/Work/asset/obj/sphere3.obj");
+    //loader.load("/home/chenmiwei/Work/asset/obj/obj2.obj");
+    loader.fillMesh(&m_mesh);
 	m_light.setType(LIGHT_PNT);
 	m_light.setPosition(glm::vec3(0.0f, 0.0f, -0.8f));
 	m_light.setColor(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -68,7 +69,8 @@ void QtViewport::initializeGL()
     //m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
     m_global_uniforms->loadDescription("/home/chenmiwei/Work/repos/vp/src/shaders/global_uniforms.json");
     //if (!m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic"))
-    //if (!m_program->load("/home/chenmiwei/Work/source/vp/src/shaders/", "pick"))
+    //if (!m_program->load("/home/chenmiwei/Work/repos/vp/src//shaders/", "basic"))
+    //if (!m_program->load("/home/chenmiwei/Work/repos/vp/src/shaders/", "pick"))
     if (!m_program->load("/home/chenmiwei/Work/repos/vp/src/shaders/", "wireframe"))
     {
         std::cout << "shader init failed" << std::endl;
