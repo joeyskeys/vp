@@ -2,6 +2,7 @@
 #include <model/table.h>
 #include <model/render_obj.h>
 #include <model/cache.h>
+#include <model/mesh.h>
 #include <model/dynamic_mesh.h>
 
 #include <iostream>
@@ -22,10 +23,22 @@ int main()
 
     //RenderObj r;
 
+    /*
     Cachef c;
     
     for (int i = 0; i < 105; i++)
         c.useNext();
+    */
+
+    ///*
+    Mesh mesh;
+    DynamicMesh dmesh;
+    ObjLoader loader;
+
+    loader.load("/home/joey/Desktop/workspace/asset/obj/sphere.obj");
+    loader.fillMesh(&mesh);
+    dmesh = DynamicMesh(&mesh);
+    //*/
 
     return 0;
 }

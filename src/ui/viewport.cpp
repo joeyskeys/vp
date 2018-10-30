@@ -22,8 +22,9 @@ QtViewport::QtViewport(QWidget *parent) :
     //m_mesh.fillCube();
     //m_mesh.updateExpandedMesh();
     ObjLoader loader;
-    loader.load("/home/chenmiwei/Work/asset/obj/sphere2.obj");
+    //loader.load("/home/chenmiwei/Work/asset/obj/sphere2.obj");
     //loader.load("/home/chenmiwei/Work/asset/obj/obj2.obj");
+    loader.load("/home/joey/Desktop/workspace/asset/obj/sphere.obj");
     loader.fillMesh(&m_mesh);
     m_dynamic_mesh = DynamicMesh(&m_mesh);
 	m_light.setType(LIGHT_PNT);
@@ -66,19 +67,19 @@ void QtViewport::initializeGL()
 
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	
-	//m_program->load("E:/work/repos/vp/src/shaders/", "basic");
-    //m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
-    m_global_uniforms->loadDescription("/home/chenmiwei/Work/repos/vp/src/shaders/global_uniforms.json");
+    m_global_uniforms->loadDescription("/mnt/media/workspace/repos/self/vp/src/shaders/global_uniforms.json");
+    //m_global_uniforms->loadDescription("/home/chenmiwei/Work/repos/vp/src/shaders/global_uniforms.json");
     //if (!m_program->load("/home/joey/Desktop/workspace/repos/self/vp/src/shaders/", "basic"))
+    if (!m_program->load("/home/joey/Desktop/Workspace/repos/self/vp/src/shaders/", "wireframe"))
     //if (!m_program->load("/home/chenmiwei/Work/repos/vp/src//shaders/", "basic"))
     //if (!m_program->load("/home/chenmiwei/Work/repos/vp/src/shaders/", "pick"))
-    if (!m_program->load("/home/chenmiwei/Work/repos/vp/src/shaders/", "wireframe"))
+    //if (!m_program->load("/home/chenmiwei/Work/repos/vp/src/shaders/", "wireframe"))
     {
         std::cout << "shader init failed" << std::endl;
         exit(1);
     }
-    //if (!m_pick_program->load("/mnt/media/workspace/repos/self/vp/src/shaders/", "pick"))
-    if (!m_pick_program->load("/home/chenmiwei/Work/repos/vp/src/shaders/", "pick"))
+    if (!m_pick_program->load("/mnt/media/workspace/repos/self/vp/src/shaders/", "pick"))
+    //if (!m_pick_program->load("/home/chenmiwei/Work/repos/vp/src/shaders/", "pick"))
     {
         std::cout << "pick shader init failed" << std::endl;
         exit(1);
