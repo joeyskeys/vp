@@ -8,9 +8,10 @@
 #include <glm/geometric.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include <vector>
 #include <map>
 #include <deque>
-#include <set>
+#include <unordered_set>
 
 typedef struct DVert DVert;
 typedef struct DEdge DEdge;
@@ -26,7 +27,7 @@ struct DVert
 {
 	unsigned int idx;
 	float *co;
-	DLoop *loop;
+    std::unordered_set<DLoop*> loops;
 
 	inline void setValue(float *v) { for (int i = 0; i < 3; i++) co[i] = v[i]; }
 	inline void setValue(glm::vec3 *v) { co[0] = v->x; co[1] = v->y; co[2] = v->z; }
@@ -71,7 +72,7 @@ struct DLoop
 };
 
 using VerticesSet = std::map<DVert*, std::pair<glm::vec3, float>>;
-using FaceSet = std::set<DFace*>;
+using FaceSet = std::unordered_set<DFace*>;
 using LoopQueue = std::deque<DLoop*>;
 
 class DynamicMesh

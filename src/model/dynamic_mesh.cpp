@@ -35,35 +35,46 @@ DynamicMesh::DynamicMesh(const Mesh *m):
 	// second loop, create edges faces and loops
 	for (int i = 0; i < tri_cnt; i++)
 	{
+        // add face
 		unsigned int *indices = indices_base + 3 * i;
 		DFace *f = addFace(indices);
 		DLoop *new_loops[3];
 		
+        // create loops
 		for (int old_idx = 2, j = 0; j < 3; old_idx = j, j++)
 		{
 			DVert *v1 = vcache.getPtrOfIdx(indices[j]);
 			DVert *v2 = vcache.getPtrOfIdx(old_idx);
 
-			DLoop *l = v1->loop;
-			DEdge *e = addEdge(v1, v2);
-
-			new_loops[j] = addLoop(v1, v2, e, f);
+			new_loops[j] = addLoop(v1, v2, nullptr, f);
 			f->loops[j] = new_loops[j];
 		}
 
+        // fill in loop->next
 		for (int old_idx = 2, j = 0; j < 3; old_idx = j, j++)
 		{
-			new_loops[j]->next = new_loops[old_idx];
-			DVert *v = vcache.getPtrOfIdx(indices[j]);
-			if (!v->loop)
-				v->loop = new_loops[j];
+			new_loops[old_idx]->next = new_loops[j];
+			DVert *v = vcache.getPtrOfIdx(indices[old_idx]);
+			v->loops.insert(new_loops[j]);
 		}
 	}
+
+    // third loop, create edges
+    for (int i = 0; i < tri_cnt; i++)
+    {
+        unsigned int *indices = indices_base + 3 * i;
+        for (int old_idx = 2, j = 0; j < 3; old_idx = j, j++)
+        {
+            DVert *v1 = vcache.getPtrOfIdx(indices[j]);
+            DVert *v2 = vcache.getPtrOfIdx(old_idx);
+            addEdge(v1, v2);
+        }
+    }
 
 	int cnt = lcache.getCount();
 	DLoop *end = lcache.data + cnt - 1;
 	DLoop *tmp;
-	// third loop, fill loop disk link info
+	// fourth loop, fill loop disk link info
 	for (DLoop *iter = lcache.data; iter <= end; iter++)
 	{
 		iter->evalDiskNext();
@@ -108,24 +119,20 @@ DVert* DynamicMesh::addVert(float *c)
 
 DEdge* DynamicMesh::addEdge(DVert *v1, DVert *v2)
 {
-	DLoop *l = v1->loop;
-	while (l)
-	{
-		if (l->end == v2)
-			return l->edge;
-		l = l->next;
-	}
-	l = v1->loop;
-	while (l)
-	{
-		if (l->end == v2)
-			return l->edge;
-		l = l->disk_prev;
-	}
-
-	DEdge *e = ecache.useNext();
-	e->updateLength(v1, v2);
-	return e;
+    for (auto it = v1->loops.begin(); it != v1->loops.end(); ++it)
+    {
+        if ((*it)->end == v2)
+        {
+            if ((*it)->edge != nullptr)
+                return (*it)->edge;
+            else
+                break;
+        }
+    }
+    
+    DEdge *e = ecache.useNext();
+    e->updateLength(v1, v2);
+    return e;
 }
 
 DFace* DynamicMesh::addFace(unsigned int *i)
@@ -142,6 +149,7 @@ DLoop* DynamicMesh::addLoop(DVert *st, DVert *ed, DEdge *e, DFace *f)
 	l->end = ed;
 	l->edge = e;
 	l->face = f;
+    st->loops.insert(l);
 	return l;
 }
 
@@ -221,8 +229,8 @@ void DynamicMesh::edgeSplit(DEdge *e)
 		// modify old element values for right part
 		// get ptrs and create neccessary elements;
 		DFace *old_face = current_l->face;
-		new_mid_loops[i << 1 + 1] = addLoop(a, v, new_mid_edges[i], new_faces[i]);
-		current_mid_loop = new_mid_loops[i << 1 + 1];
+		new_mid_loops[(i << 1) + 1] = addLoop(a, v, new_mid_edges[i], new_faces[i]);
+		current_mid_loop = new_mid_loops[(i << 1) + 1];
 		// update fields;
 		new_mid_edges[i]->loops[1] = current_mid_loop;
 		old_face->loops[old_face->getIdxOfLoop(la)] = current_mid_loop;
@@ -347,4 +355,6 @@ VerticesSet DynamicMesh::getAffectedVertices(glm::vec3& center, int face_idx, fl
 			}
 		}
 	}
+
+    return affected_verts;
 }
