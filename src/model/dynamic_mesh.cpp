@@ -32,7 +32,7 @@ DynamicMesh::DynamicMesh(const Mesh *m):
 
 	int tri_cnt = m->getTriCount();
 	unsigned int *indices_base = m->getIdx();
-	// second loop, create edges faces and loops
+	// second loop, create faces and loops
 	for (int i = 0; i < tri_cnt; i++)
 	{
         // add face
@@ -110,7 +110,6 @@ DynamicMesh& DynamicMesh::operator=(DynamicMesh&& b)
 
 DVert* DynamicMesh::addVert(float *c)
 {
-	std::cout << "in add vert" << std::endl;
 	DVert *v = vcache.useNext();
 	v->co = c;
 	v->idx = vcache.getIdxOfPtr(v);

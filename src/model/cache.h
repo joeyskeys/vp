@@ -60,7 +60,6 @@ Cache<T>::~Cache()
 {
 	if (data)
     {
-		std::cout << "destructor: freeing " << data << std::endl;
 		free(data);
 		data = nullptr;
     }
@@ -80,7 +79,6 @@ Cache<T>& Cache<T>::operator=(const Cache<T>& b)
 {
 	if (data && size != b.size)
 	{
-		std::cout << "copy assign: freeing " << data << std::endl;
 		free(data);
 		data = nullptr;
 	}
@@ -100,7 +98,6 @@ Cache<T>::Cache(Cache<T>&& b):
 {
 	if (data)
 	{
-		std::cout << "move construct: freeing " << data << std::endl;
 		free(data);
 	}
 	data = b.data;
@@ -114,7 +111,6 @@ Cache<T>& Cache<T>::operator=(Cache<T>&& b)
 	offset = b.offset;
 	if (data)
 	{
-		std::cout << "move assign: freeing " << data << std::endl;
 		free(data);
 	}
 	data = b.data;
@@ -139,7 +135,6 @@ void Cache<T>::reserve(unsigned int c)
 	T *tmp = (T*)malloc(new_size);
 	if (data)
 	{
-		std::cout << "reverse: freeing " << data << std::endl;
 		memcpy(tmp, data, size);
 		free(data);
 	}
@@ -150,16 +145,15 @@ void Cache<T>::reserve(unsigned int c)
 template<typename T>
 void Cache<T>::enlarge(float ratio)
 {
-	unsigned int new_capability = ratio * capability;
+    // size of buffer must be N * sizeof(T)
+	unsigned int new_capability = (unsigned int)(ratio * (capability / sizeof(T))) * sizeof(T);
 	T *tmp = (T*)malloc(new_capability);
 	if (data)
 	{
 		memcpy(tmp, data, size);
-		std::cout << "enlarge: freeing " << data << std::endl;
 		free(data);
 	}
 	data = tmp;
-	std::cout << "new data: " << data << std::endl;
 	capability = new_capability;
 }
 
@@ -168,7 +162,6 @@ void Cache<T>::fillData(unsigned int c, T *d)
 {
 	if (data && size != c * sizeof(T))
 	{
-		std::cout << "filldata: freeing " << data << std::endl;
 		free(data);
 	}
 	
@@ -184,7 +177,6 @@ void Cache<T>::appendData(T *e, unsigned int cnt)
 	unsigned int new_size = size + stream_size;
 	if (new_size > capability)
 	{
-		std::cout << "enlarge in appendData" << std::endl;
 		float ratio = static_cast<float>(new_size) / capability;
 		if (ratio < 1.5f)
 			enlarge();
@@ -203,7 +195,6 @@ void Cache<T>::copyData(T *e, unsigned int cnt)
     unsigned int stream_size = cnt * sizeof(T);
     if (stream_size > capability)
     {
-		std::cout << "enlarge in copyData" << std::endl;
         float ratio = static_cast<float>(stream_size) / capability;
         if (ratio < 1.5f)
             enlarge();
@@ -221,7 +212,6 @@ T* Cache<T>::useNext()
 {
 	if (size >= capability)
 	{
-		std::cout << "enlarge in useNext" << std::endl;
 		enlarge();
 	}
 
@@ -288,7 +278,6 @@ public:
 	{
 		if (data && size != cppstr.size())
 		{
-			std::cout << "copy assign: freeing" << data << std::endl;
 			free(data);
 		}
 
