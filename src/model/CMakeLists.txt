@@ -11,7 +11,7 @@ set(HEADERS
     utils.h
     table.h
     render_obj.h
-    )
+)
 
 set(SOURCES
     dynamic_mesh.cpp
@@ -23,12 +23,17 @@ set(SOURCES
     utils.cpp
     table.cpp
     render_obj.cpp
-    )
+)
 
 add_library(model STATIC
     ${HEADERS}
     ${SOURCES}
-    )
+)
+
+target_link_libraries(model
+    general
+        ${Boost_LIBRARIES}
+)
 
 source_group("Header Files"
     FILES

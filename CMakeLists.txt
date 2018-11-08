@@ -27,6 +27,10 @@ include_directories(${Qt5Widgets_INCLUDE_DIRS}
                     ${Qt5Core_INCLUDE_DIRS}
                     ${Qt5Gui_INCLUDE_DIRS})
 
+find_package(Boost 1.65 REQUIRED COMPONENTS filesystem)
+
+include_directories(SYSTEM ${Boost_INCLUDE_DIRS})
+
 if (Qt5_POSITION_INDEPENDENT_CODE)
     set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endif()

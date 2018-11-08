@@ -2,6 +2,8 @@
 #include "utils.h"
 #include "table.h"
 
+#include <boost/filesystem.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <cstdio>
