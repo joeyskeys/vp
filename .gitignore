@@ -32,10 +32,13 @@
 *.app
 
 # Build Directory
-build
+build*
 
 # ctags file
 tags
 
 # vs code files
 .vscode
+
+# cmake user file
+CMakeLists.txt.user
